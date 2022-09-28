@@ -15,6 +15,7 @@
 	<description>Daily tarot day card</description>
 	<properties>
 		<java.version>11</java.version>
+		<telegram.version>5.6.0</telegram.version>
 	</properties>
 	<dependencies>
 		<dependency>
@@ -27,6 +28,13 @@
 			<artifactId>spring-boot-starter-test</artifactId>
 			<scope>test</scope>
 		</dependency>
+
+		<dependency>
+			<groupId>org.telegram</groupId>
+			<artifactId>telegrambots</artifactId>
+			<version>${telegram.version}</version>
+		</dependency>
+
 	</dependencies>
 
 	<build>
