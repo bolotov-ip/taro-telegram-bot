@@ -14,12 +14,23 @@ public class BotConfig {
     @Value("${bot.token}")
     private String token;
 
+    @Value("${bot.catalog-photo}")
+    private String pathFile;
+
     public String getBotName() {
         return botName;
     }
 
     public void setBotName(String botName) {
         this.botName = botName;
+    }
+
+    public String getPathFile() {
+        return pathFile;
+    }
+
+    public void setPathFile(String pathFile) {
+        this.pathFile = pathFile;
     }
 
     public String getToken() {
