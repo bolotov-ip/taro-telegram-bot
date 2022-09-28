@@ -1,6 +1,8 @@
 package com.everydaytarot.tarotelegrambot.config;
 
 import com.everydaytarot.tarotelegrambot.service.TelegramBot;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.context.event.EventListener;
@@ -15,6 +17,8 @@ public class BotInizitalzer {
     @Autowired
     TelegramBot bot;
 
+    private final Logger log = LoggerFactory.getLogger(BotInizitalzer.class);
+
     @EventListener({ContextRefreshedEvent.class})
     public void init() throws TelegramApiException {
         TelegramBotsApi telegramBotsApi = new TelegramBotsApi(DefaultBotSession.class);
@@ -22,7 +26,7 @@ public class BotInizitalzer {
             telegramBotsApi.registerBot(bot);
         }
         catch (TelegramApiException e) {
-            e.printStackTrace();
+            log.error("Error occurred: " + e.getMessage());
         }
     }
 
