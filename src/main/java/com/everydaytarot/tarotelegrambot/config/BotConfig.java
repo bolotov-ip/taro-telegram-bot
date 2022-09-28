@@ -14,6 +14,17 @@ public class BotConfig {
     @Value("${bot.token}")
     private String token;
 
+    @Value("${bot.name}")
+    private String ownerId;
+
+    public String getOwnerId() {
+        return ownerId;
+    }
+
+    public void setOwnerId(String ownerId) {
+        this.ownerId = ownerId;
+    }
+
     public String getBotName() {
         return botName;
     }
