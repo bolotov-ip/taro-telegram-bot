@@ -6,9 +6,11 @@ import com.everydaytarot.tarotelegrambot.service.TelegramBot;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Update;
 
+@Component
 public class AdminHandler implements Handler{
 
     private final Logger log = LoggerFactory.getLogger(TelegramBot.class);
@@ -23,8 +25,11 @@ public class AdminHandler implements Handler{
     @Autowired
     private BotConfig config;
 
-    public AdminHandler(TelegramBot bot, Update update) {
+    public void setBot(TelegramBot bot) {
         this.bot = bot;
+    }
+
+    public void setUpdate(Update update) {
         this.update = update;
     }
 

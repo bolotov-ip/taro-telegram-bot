@@ -22,8 +22,10 @@ public class TelegramBot extends TelegramLongPollingBot {
 
     private final Logger log = LoggerFactory.getLogger(TelegramBot.class);
 
+    @Autowired
     private AdminHandler adminHandler;
 
+    @Autowired
     private UserHandler userHandler;
 
     @Autowired
@@ -47,12 +49,11 @@ public class TelegramBot extends TelegramLongPollingBot {
         Message msg = update.hasMessage()?update.getMessage():update.hasCallbackQuery()?update.getCallbackQuery().getMessage():null;
         if(msg == null)
             return;
-        boolean isAdmin = isAdmin(msg);
-        Handler handler = null;
-        if(isAdmin) {
-            handler = adminHandler = adminHandler==null?new AdminHandler(this, update):adminHandler;
-        } else
-            handler = userHandler = userHandler==null?new UserHandler(this, update):userHandler;
+        adminHandler.setBot(this);
+        adminHandler.setUpdate(update);
+        userHandler.setBot(this);
+        userHandler.setUpdate(update);
+        Handler handler = isAdmin(msg)?adminHandler:userHandler;
         handler.run();
     }
 
