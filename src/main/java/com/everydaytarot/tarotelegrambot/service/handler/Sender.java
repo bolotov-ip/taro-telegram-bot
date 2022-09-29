@@ -1,5 +1,6 @@
-package com.everydaytarot.tarotelegrambot.service;
+package com.everydaytarot.tarotelegrambot.service.handler;
 
+import com.everydaytarot.tarotelegrambot.service.TelegramBot;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;

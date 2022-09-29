@@ -8,7 +8,6 @@ import java.sql.Timestamp;
 
 @Entity(name = "users")
 public class User {
-    public enum Role { USER, ADMIN; }
 
     public static User createUserAdmin(Message msg) {
         User user = createUser(msg);
