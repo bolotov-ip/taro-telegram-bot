@@ -43,26 +43,6 @@ public class User {
 
     Long idSubsciption;
 
-    String latestComand;
-
-    public String getLatestComand() {
-        return latestComand;
-    }
-
-    public void setLatestComand(String latestComand) {
-        this.latestComand = latestComand;
-    }
-
-    public Timestamp getDateLatestComand() {
-        return dateLatestComand;
-    }
-
-    public void setDateLatestComand(Timestamp dateLatestComand) {
-        this.dateLatestComand = dateLatestComand;
-    }
-
-    Timestamp dateLatestComand;
-
     public Long getIdChat() {
         return idChat;
     }
