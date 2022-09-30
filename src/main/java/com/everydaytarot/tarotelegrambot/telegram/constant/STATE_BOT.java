@@ -4,24 +4,15 @@ import java.util.HashMap;
 import java.util.Map;
 
 public enum STATE_BOT {
-    START(null), BTN_ADMIN_MENU(STATE_BOT.START), INPUT_XLSX(STATE_BOT.BTN_ADMIN_MENU);
+    START, ADMIN_MENU, INPUT_XLSX, ERROR_LOAD, LOAD;
 
-    private STATE_BOT previousState;
     private static Map<String, String> textMessage = new HashMap<String, String>();
     static {
         textMessage.put("START", "Добро пожаловать");
-        textMessage.put("BTN_ADMIN_MENU", "Меню");
+        textMessage.put("ADMIN_MENU", "Меню");
         textMessage.put("INPUT_XLSX", "Загрузите файл Excel c расширением xlsx, содержащий\n структуру и описание всех комбинаций результата");
-    }
-
-    STATE_BOT(STATE_BOT prev) {
-        previousState = prev;
-    }
-
-    public STATE_BOT getPreviousState() {
-        if(previousState == null)
-            return this;
-        return previousState;
+        textMessage.put("LOAD", "Файл загружен успешно");
+        textMessage.put("ERROR_LOAD", "Файл не загружен. Попробуйте снова");
     }
 
     public String getTextMessage() {

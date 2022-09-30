@@ -17,6 +17,9 @@ public class BotConfig {
     @Value("${bot.owner}")
     private String ownerId;
 
+    @Value("${bot.catalog}")
+    private String pathFile;
+
     public String getOwnerId() {
         return ownerId;
     }
@@ -41,4 +44,11 @@ public class BotConfig {
         this.token = token;
     }
 
+    public String getPathFile() {
+        return pathFile;
+    }
+
+    public void setPathFile(String pathFile) {
+        this.pathFile = pathFile;
+    }
 }

@@ -11,18 +11,22 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKe
 import java.util.ArrayList;
 import java.util.List;
 
-public class MenuView {
+public class MessageButtonView {
 
     public static void setMessageButton(BotApiMethod<?> msg, String botState) {
 
         if(botState.equals(STATE_BOT.START.toString())) {
             setAdminStart(msg);
         }
-        else if(botState.equals(STATE_BOT.BTN_ADMIN_MENU.toString())) {
+        else if(botState.equals(STATE_BOT.ADMIN_MENU.toString())) {
             setAdminMenu(msg);
         }
         else if(botState.equals(STATE_BOT.INPUT_XLSX.toString())) {
             setAdminAddXlsx(msg);
+        } else if(botState.equals(STATE_BOT.LOAD.toString())) {
+            setLoad(msg);
+        } else if(botState.equals(STATE_BOT.ERROR_LOAD.toString())) {
+            setErrorLoad(msg);
         }
     }
 
@@ -67,8 +71,38 @@ public class MenuView {
         List<List<InlineKeyboardButton>> rowsInLine = new ArrayList<>();
         List<InlineKeyboardButton> rowInLine = new ArrayList<>();
         InlineKeyboardButton button = new InlineKeyboardButton();
-        button.setText(BUTTONS.BTN_BACK.getText());
-        button.setCallbackData(BUTTONS.BTN_BACK.toString());
+        button.setText(BUTTONS.BTN_CANCEL.getText());
+        button.setCallbackData(BUTTONS.BTN_CANCEL.toString());
+        rowInLine.add(button);
+        rowsInLine.add(rowInLine);
+        markupInLine.setKeyboard(rowsInLine);
+        replyMarkup(markupInLine, msg);
+    }
+
+    private static void setLoad(BotApiMethod<?> msg) {
+        InlineKeyboardMarkup markupInLine = new InlineKeyboardMarkup();
+        List<List<InlineKeyboardButton>> rowsInLine = new ArrayList<>();
+        List<InlineKeyboardButton> rowInLine = new ArrayList<>();
+        InlineKeyboardButton button = new InlineKeyboardButton();
+        button.setText(BUTTONS.BTN_BACK_TO_START.getText());
+        button.setCallbackData(BUTTONS.BTN_BACK_TO_START.toString());
+        rowInLine.add(button);
+        rowsInLine.add(rowInLine);
+        markupInLine.setKeyboard(rowsInLine);
+        replyMarkup(markupInLine, msg);
+    }
+
+    private static void setErrorLoad(BotApiMethod<?> msg) {
+        InlineKeyboardMarkup markupInLine = new InlineKeyboardMarkup();
+        List<List<InlineKeyboardButton>> rowsInLine = new ArrayList<>();
+        List<InlineKeyboardButton> rowInLine = new ArrayList<>();
+        InlineKeyboardButton button = new InlineKeyboardButton();
+        button.setText(BUTTONS.BTN_BACK_TO_START.getText());
+        button.setCallbackData(BUTTONS.BTN_BACK_TO_START.toString());
+        rowInLine.add(button);
+        button = new InlineKeyboardButton();
+        button.setText(BUTTONS.BTN_AGAIN_LOAD.getText());
+        button.setCallbackData(BUTTONS.BTN_AGAIN_LOAD.toString());
         rowInLine.add(button);
         rowsInLine.add(rowInLine);
         markupInLine.setKeyboard(rowsInLine);

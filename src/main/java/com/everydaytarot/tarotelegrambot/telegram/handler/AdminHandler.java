@@ -1,14 +1,15 @@
 package com.everydaytarot.tarotelegrambot.telegram.handler;
 
+import com.everydaytarot.tarotelegrambot.dao.StateDao;
 import com.everydaytarot.tarotelegrambot.telegram.TelegramBot;
 import com.everydaytarot.tarotelegrambot.telegram.constant.BUTTONS;
-import com.everydaytarot.tarotelegrambot.telegram.constant.COMANDS;
+import com.everydaytarot.tarotelegrambot.telegram.constant.COMMANDS;
+import com.everydaytarot.tarotelegrambot.telegram.constant.STATE_BOT;
 import com.everydaytarot.tarotelegrambot.telegram.domain.AnswerBot;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Update;
 
 @Component
@@ -16,6 +17,9 @@ public class AdminHandler implements Handler{
 
     @Autowired
     private EventHandler eventHandler;
+
+    @Autowired
+    private StateDao stateDao;
 
     private final Logger log = LoggerFactory.getLogger(TelegramBot.class);
 
@@ -37,13 +41,11 @@ public class AdminHandler implements Handler{
 
             String textMessage = update.getMessage().getText();
 
-            if(textMessage.equals(COMANDS.COMMAND_START.getText())) {
+            if(textMessage.equals(COMMANDS.COMMAND_START.getText())) {
                 return eventHandler.start(update);
             }
             else {
-                SendMessage send = new SendMessage(String.valueOf(update.getMessage().getChatId()), "Команда не поддерживается");
-                AnswerBot answer = new AnswerBot(send);
-                return answer;
+                return eventHandler.commandNotSupport(update);
             }
 
         } else if(update.hasCallbackQuery()) {
@@ -59,6 +61,22 @@ public class AdminHandler implements Handler{
             else if(callbackData.equals(BUTTONS.BTN_BACK.toString())) {
                 return eventHandler.pressBack(update);
             }
+            else if(callbackData.equals(BUTTONS.BTN_BACK_TO_START.toString())) {
+                return eventHandler.start(update);
+            }
+            else if(callbackData.equals(BUTTONS.BTN_AGAIN_LOAD.toString())) {
+                return eventHandler.pressAddXLSX(update);
+            }
+            else if(callbackData.equals(BUTTONS.BTN_CANCEL.toString())) {
+                return eventHandler.pressBack(update);
+            }
+        } else if(update.getMessage().hasDocument()) {
+            STATE_BOT state = stateDao.getState(update.getMessage().getChatId());
+            if(state.equals(STATE_BOT.INPUT_XLSX)) {
+                return eventHandler.downloadExcel(update);
+            }
+        } else {
+            return eventHandler.commandNotSupport(update);
         }
         return null;
     }

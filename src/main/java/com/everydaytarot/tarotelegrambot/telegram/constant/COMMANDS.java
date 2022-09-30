@@ -1,11 +1,11 @@
 package com.everydaytarot.tarotelegrambot.telegram.constant;
 
-public enum COMANDS {
+public enum COMMANDS {
     COMMAND_START("/start");
 
     private String text;
 
-    COMANDS(String txt) {
+    COMMANDS(String txt) {
         text = txt;
     }
 
