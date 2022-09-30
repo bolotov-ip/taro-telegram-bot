@@ -1,12 +1,13 @@
-package com.everydaytarot.tarotelegrambot.service;
+package com.everydaytarot.tarotelegrambot.telegram;
 
 import com.everydaytarot.tarotelegrambot.config.BotConfig;
+import com.everydaytarot.tarotelegrambot.domain.AnswerBot;
 import com.everydaytarot.tarotelegrambot.model.Role;
 import com.everydaytarot.tarotelegrambot.model.User;
 import com.everydaytarot.tarotelegrambot.repository.UserRepository;
-import com.everydaytarot.tarotelegrambot.service.handler.AdminHandler;
-import com.everydaytarot.tarotelegrambot.service.handler.Handler;
-import com.everydaytarot.tarotelegrambot.service.handler.UserHandler;
+import com.everydaytarot.tarotelegrambot.telegram.handler.AdminHandler;
+import com.everydaytarot.tarotelegrambot.telegram.handler.Handler;
+import com.everydaytarot.tarotelegrambot.telegram.handler.UserHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +15,7 @@ import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
+import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
 import java.util.Optional;
 
@@ -54,7 +56,12 @@ public class TelegramBot extends TelegramLongPollingBot {
         userHandler.setBot(this);
         userHandler.setUpdate(update);
         Handler handler = isAdmin(msg)?adminHandler:userHandler;
-        handler.run();
+        AnswerBot answer = handler.run();
+        try {
+            execute(answer.getAnswer());
+        } catch (TelegramApiException e) {
+            log.error("Error occured: " + e.getMessage());
+        }
     }
 
     private boolean isAdmin(Message msg) {

@@ -1,8 +1,9 @@
-package com.everydaytarot.tarotelegrambot.service.handler;
+package com.everydaytarot.tarotelegrambot.telegram.handler;
 
 import com.everydaytarot.tarotelegrambot.config.BotConfig;
+import com.everydaytarot.tarotelegrambot.domain.AnswerBot;
+import com.everydaytarot.tarotelegrambot.telegram.TelegramBot;
 import com.everydaytarot.tarotelegrambot.repository.UserRepository;
-import com.everydaytarot.tarotelegrambot.service.TelegramBot;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,7 +34,7 @@ public class UserHandler implements Handler{
     }
 
     @Override
-    public void run() {
-
+    public AnswerBot run() {
+        return null;
     }
 }

@@ -1,9 +1,8 @@
-package com.everydaytarot.tarotelegrambot.service.handler;
+package com.everydaytarot.tarotelegrambot.telegram.handler;
 
-import com.everydaytarot.tarotelegrambot.service.TelegramBot;
+import com.everydaytarot.tarotelegrambot.telegram.TelegramBot;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.methods.send.SendDocument;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.methods.send.SendPhoto;
