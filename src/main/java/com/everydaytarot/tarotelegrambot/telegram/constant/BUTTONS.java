@@ -4,7 +4,7 @@ public enum BUTTONS {
     BTN_USER_START_SERVICE("Получить предсказание"),
     BTN_ADMIN_ORDER_BUTTON("Выполнить заказ"),
     BTN_ADMIN_MENU("Меню"),
-    BTN_ADMIN_BACK("Назад"),
+    BTN_BACK("Назад"),
     BTN_ADMIN_ADD_XLSX("Добавить excel");
 
     private String text;

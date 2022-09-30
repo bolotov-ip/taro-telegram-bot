@@ -1,8 +1,8 @@
 package com.everydaytarot.tarotelegrambot.telegram.handler;
 
 import com.everydaytarot.tarotelegrambot.config.BotConfig;
-import com.everydaytarot.tarotelegrambot.domain.AnswerBot;
 import com.everydaytarot.tarotelegrambot.telegram.TelegramBot;
+import com.everydaytarot.tarotelegrambot.domain.AnswerBot;
 import com.everydaytarot.tarotelegrambot.repository.UserRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
