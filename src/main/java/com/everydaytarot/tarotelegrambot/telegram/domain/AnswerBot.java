@@ -1,4 +1,4 @@
-package com.everydaytarot.tarotelegrambot.domain;
+package com.everydaytarot.tarotelegrambot.telegram.domain;
 
 import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
 import org.telegram.telegrambots.meta.api.methods.send.SendDocument;

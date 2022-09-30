@@ -2,7 +2,7 @@ package com.everydaytarot.tarotelegrambot.telegram.handler;
 
 import com.everydaytarot.tarotelegrambot.dao.StateDao;
 import com.everydaytarot.tarotelegrambot.telegram.view.MenuView;
-import com.everydaytarot.tarotelegrambot.domain.AnswerBot;
+import com.everydaytarot.tarotelegrambot.telegram.domain.AnswerBot;
 import com.everydaytarot.tarotelegrambot.telegram.constant.STATE_BOT;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;

@@ -1,7 +1,7 @@
 package com.everydaytarot.tarotelegrambot.telegram;
 
 import com.everydaytarot.tarotelegrambot.config.BotConfig;
-import com.everydaytarot.tarotelegrambot.domain.AnswerBot;
+import com.everydaytarot.tarotelegrambot.telegram.domain.AnswerBot;
 import com.everydaytarot.tarotelegrambot.model.Role;
 import com.everydaytarot.tarotelegrambot.model.User;
 import com.everydaytarot.tarotelegrambot.repository.UserRepository;

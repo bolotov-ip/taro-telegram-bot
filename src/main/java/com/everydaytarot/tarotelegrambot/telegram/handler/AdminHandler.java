@@ -3,7 +3,7 @@ package com.everydaytarot.tarotelegrambot.telegram.handler;
 import com.everydaytarot.tarotelegrambot.telegram.TelegramBot;
 import com.everydaytarot.tarotelegrambot.telegram.constant.BUTTONS;
 import com.everydaytarot.tarotelegrambot.telegram.constant.COMANDS;
-import com.everydaytarot.tarotelegrambot.domain.AnswerBot;
+import com.everydaytarot.tarotelegrambot.telegram.domain.AnswerBot;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
