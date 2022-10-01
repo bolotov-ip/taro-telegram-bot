@@ -6,13 +6,13 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 
 @Entity(name = "state_bot")
-public class StateBot {
+public class StateBotUser {
 
-    public static StateBot createStateBot(Long chatId, STATE_BOT state) {
-        StateBot stateBot = new StateBot();
-        stateBot.setChatId(chatId);
-        stateBot.setStateBot(state.toString());
-        return stateBot;
+    public static StateBotUser createStateBot(Long chatId, STATE_BOT state) {
+        StateBotUser stateBotUser = new StateBotUser();
+        stateBotUser.setChatId(chatId);
+        stateBotUser.setStateBot(state.toString());
+        return stateBotUser;
     }
 
     @Id

@@ -20,6 +20,28 @@ public class BotConfig {
     @Value("${bot.catalog}")
     private String pathFile;
 
+    @Value("${bot.catalog.card}")
+    private String catalogCard;
+
+    @Value("${bot.catalog.xlsx}")
+    private String catalogXlsx;
+
+    public String getCatalogCard() {
+        return catalogCard;
+    }
+
+    public void setCatalogCard(String catalogCard) {
+        this.catalogCard = catalogCard;
+    }
+
+    public String getCatalogXlsx() {
+        return catalogXlsx;
+    }
+
+    public void setCatalogXlsx(String catalogXlsx) {
+        this.catalogXlsx = catalogXlsx;
+    }
+
     public String getOwnerId() {
         return ownerId;
     }

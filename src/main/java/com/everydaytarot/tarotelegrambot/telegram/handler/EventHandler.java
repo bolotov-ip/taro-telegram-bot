@@ -1,7 +1,9 @@
 package com.everydaytarot.tarotelegrambot.telegram.handler;
 
 import com.everydaytarot.tarotelegrambot.config.BotConfig;
+import com.everydaytarot.tarotelegrambot.dao.AuguryResultDao;
 import com.everydaytarot.tarotelegrambot.dao.StateDao;
+import com.everydaytarot.tarotelegrambot.service.excel.ExcelParser;
 import com.everydaytarot.tarotelegrambot.telegram.TelegramBot;
 import com.everydaytarot.tarotelegrambot.telegram.view.MessageButtonView;
 import com.everydaytarot.tarotelegrambot.telegram.domain.AnswerBot;
@@ -23,6 +25,7 @@ import java.io.InputStreamReader;
 import java.net.URL;
 import java.nio.channels.Channels;
 import java.nio.channels.ReadableByteChannel;
+import java.sql.Timestamp;
 
 @Component
 public class EventHandler {
@@ -31,7 +34,13 @@ public class EventHandler {
     StateDao stateDao;
 
     @Autowired
+    AuguryResultDao auguryResultDao;
+
+    @Autowired
     BotConfig botConfig;
+
+    @Autowired
+    ExcelParser excelParser;
 
     private final Logger log = LoggerFactory.getLogger(TelegramBot.class);
 
@@ -93,6 +102,10 @@ public class EventHandler {
         return answer;
     }
 
+    public AnswerBot deleteAuguryTables(Update update) {
+        return null;
+    }
+
     public AnswerBot pressBack(Update update) {
         Message msg = update.getCallbackQuery().getMessage();
         STATE_BOT state = stateDao.getState(msg.getChatId());
@@ -104,6 +117,8 @@ public class EventHandler {
     }
 
     public AnswerBot downloadExcel(Update update) {
+        excelParser.deleteFileXlsx();
+
         AnswerBot answer = new AnswerBot();
         Message message = update.getMessage();
         String chatId = String.valueOf(message.getChatId());
@@ -116,7 +131,7 @@ public class EventHandler {
         String fileName = update.getMessage().getDocument().getFileName();
         String fileId = update.getMessage().getDocument().getFileId();
         try {
-            uploadFile(fileName, fileId, botConfig.getPathFile());
+            uploadFile(fileName, fileId, botConfig.getCatalogXlsx());
             sendMessage.setText(STATE_BOT.LOAD.getTextMessage());
             MessageButtonView.setMessageButton(sendMessage, STATE_BOT.LOAD.toString());
             stateDao.setState(STATE_BOT.LOAD, Long.valueOf(chatId));
@@ -127,9 +142,17 @@ public class EventHandler {
             MessageButtonView.setMessageButton(sendMessage, STATE_BOT.ERROR_LOAD.toString());
             stateDao.setState(STATE_BOT.ERROR_LOAD, Long.valueOf(chatId));
         }
-
+        Thread th = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                excelParser.parserXlsx(botConfig.getCatalogXlsx()+fileName);
+            }
+        });
+        th.start();
         return answer;
     }
+
+
 
     public AnswerBot commandNotSupport(Update update) {
         SendMessage send = new SendMessage(String.valueOf(update.getMessage().getChatId()), "Команда не поддерживается");
