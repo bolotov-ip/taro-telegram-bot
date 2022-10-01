@@ -1,6 +1,7 @@
 package com.everydaytarot.tarotelegrambot.telegram;
 
 import com.everydaytarot.tarotelegrambot.config.BotConfig;
+import com.everydaytarot.tarotelegrambot.dao.UserDao;
 import com.everydaytarot.tarotelegrambot.telegram.domain.AnswerBot;
 import com.everydaytarot.tarotelegrambot.model.Role;
 import com.everydaytarot.tarotelegrambot.model.User;
@@ -31,6 +32,9 @@ public class TelegramBot extends TelegramLongPollingBot {
     private UserHandler userHandler;
 
     @Autowired
+    private UserDao userDao;
+
+    @Autowired
     BotConfig config;
 
     @Autowired
@@ -55,34 +59,17 @@ public class TelegramBot extends TelegramLongPollingBot {
         adminHandler.setUpdate(update);
         userHandler.setBot(this);
         userHandler.setUpdate(update);
-        Handler handler = isAdmin(msg)?adminHandler:userHandler;
+
+        User user = userDao.getUser(msg);
+        if(user==null) {
+            user = userDao.registerUser(msg);
+        }
+        Handler handler = user.isAdmin()?adminHandler:userHandler;
         AnswerBot answer = handler.run();
         try {
             execute(answer.getAnswer());
         } catch (TelegramApiException e) {
             log.error("Error occured: " + e.getMessage());
         }
-    }
-
-    private boolean isAdmin(Message msg) {
-        Optional<User> optUser = userRepository.findById(msg.getChatId());
-        User user = null;
-        if(optUser.isPresent()) {
-            user = optUser.get();
-        } else {
-            user = registerUser(msg);
-        }
-        boolean isAdmin = user.getRole().contains(Role.ADMIN.toString());
-        if(isAdmin)
-            return true;
-        return false;
-    }
-
-    public User registerUser(Message msg) {
-        boolean isOwner = String.valueOf(msg.getChatId()).equals(config.getOwnerId());
-        User user = isOwner?User.createUserAdmin(msg):User.createUser(msg);
-        userRepository.save(user);
-        log.info("user saved: " + user);
-        return user;
     }
 }

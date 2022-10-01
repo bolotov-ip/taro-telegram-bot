@@ -146,11 +146,10 @@ public class EventHandler {
         String file_path = path.getString("file_path");
         URL downoload = new URL("https://api.telegram.org/file/bot" + botConfig.getToken() + "/" + file_path);
         FileOutputStream fos = new FileOutputStream(pathFile + fileName);
-        System.out.println("Start upload");
         ReadableByteChannel rbc = Channels.newChannel(downoload.openStream());
         fos.getChannel().transferFrom(rbc, 0, Long.MAX_VALUE);
         fos.close();
         rbc.close();
-        System.out.println("Uploaded!");
+        log.info("File " + fileName + " download");
     }
 }

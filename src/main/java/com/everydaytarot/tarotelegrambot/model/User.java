@@ -28,6 +28,12 @@ public class User {
         return user;
     }
 
+    public boolean isAdmin() {
+        if(role!=null)
+            return role.contains(Role.ADMIN.toString());
+        return false;
+    }
+
     @Id
     Long idChat;
 
