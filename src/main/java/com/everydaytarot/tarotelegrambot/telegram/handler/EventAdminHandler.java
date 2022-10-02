@@ -3,7 +3,7 @@ package com.everydaytarot.tarotelegrambot.telegram.handler;
 import com.everydaytarot.tarotelegrambot.config.BotConfig;
 import com.everydaytarot.tarotelegrambot.dao.AuguryResultDao;
 import com.everydaytarot.tarotelegrambot.dao.StateDao;
-import com.everydaytarot.tarotelegrambot.service.excel.ExcelParser;
+import com.everydaytarot.tarotelegrambot.model.service.excel.ExcelParser;
 import com.everydaytarot.tarotelegrambot.telegram.TelegramBot;
 import com.everydaytarot.tarotelegrambot.telegram.view.MessageButtonView;
 import com.everydaytarot.tarotelegrambot.telegram.domain.AnswerBot;
@@ -25,10 +25,9 @@ import java.io.InputStreamReader;
 import java.net.URL;
 import java.nio.channels.Channels;
 import java.nio.channels.ReadableByteChannel;
-import java.sql.Timestamp;
 
 @Component
-public class EventHandler {
+public class EventAdminHandler {
 
     @Autowired
     StateDao stateDao;
@@ -45,65 +44,20 @@ public class EventHandler {
     private final Logger log = LoggerFactory.getLogger(TelegramBot.class);
 
     public AnswerBot start(Update update) {
-        AnswerBot answer = new AnswerBot();
-        String chatId = "";
         if(update.hasCallbackQuery()) {
-            Message message = update.getCallbackQuery().getMessage();
-            chatId = String.valueOf(message.getChatId());
-            long messageId = message.getMessageId();
-            EditMessageText editMessage = new EditMessageText();
-            editMessage.setChatId(chatId);
-            editMessage.setMessageId((int)messageId);
-            editMessage.setText(STATE_BOT.START.getTextMessage());
-            MessageButtonView.setMessageButton(editMessage, STATE_BOT.START.toString());
-            answer.setAnswer(editMessage);
-
+            return setCommonCallbackAnswer(update, STATE_BOT.START);
         }
         else {
-            Message message = update.getMessage();
-            chatId = String.valueOf(message.getChatId());
-            SendMessage sendMessage = new SendMessage(chatId, STATE_BOT.START.getTextMessage());
-            MessageButtonView.setMessageButton(sendMessage, STATE_BOT.START.toString());
-            answer.setAnswer(sendMessage);
+            return setCommonAnswer(update, STATE_BOT.START);
         }
-
-        stateDao.setState(STATE_BOT.START, Long.valueOf(chatId));
-        return answer;
     }
 
     public AnswerBot pressMenu(Update update) {
-        Message msg = update.getCallbackQuery().getMessage();
-        String chatId = String.valueOf(msg.getChatId());
-        long messageId = msg.getMessageId();
-        EditMessageText editMessage = new EditMessageText();
-        editMessage.setChatId(chatId);
-        String admin_menu = STATE_BOT.ADMIN_MENU.getTextMessage();
-        editMessage.setText(STATE_BOT.ADMIN_MENU.getTextMessage());
-        editMessage.setMessageId((int)messageId);
-        MessageButtonView.setMessageButton(editMessage, STATE_BOT.ADMIN_MENU.toString());
-        AnswerBot answer = new AnswerBot(editMessage);
-        stateDao.setState(STATE_BOT.ADMIN_MENU, Long.valueOf(chatId));
-
-        return answer;
+        return setCommonCallbackAnswer(update, STATE_BOT.ADMIN_MENU);
     }
 
     public AnswerBot pressAddXLSX(Update update) {
-        Message msg = update.getCallbackQuery().getMessage();
-        String chatId = String.valueOf(msg.getChatId());
-        long messageId = msg.getMessageId();
-        EditMessageText editMessage = new EditMessageText();
-        editMessage.setChatId(chatId);
-        editMessage.setText(STATE_BOT.INPUT_XLSX.getTextMessage());
-        editMessage.setMessageId((int)messageId);
-        MessageButtonView.setMessageButton(editMessage, STATE_BOT.INPUT_XLSX.toString());
-        AnswerBot answer = new AnswerBot(editMessage);
-        stateDao.setState(STATE_BOT.INPUT_XLSX, Long.valueOf(chatId));
-
-        return answer;
-    }
-
-    public AnswerBot deleteAuguryTables(Update update) {
-        return null;
+        return setCommonCallbackAnswer(update, STATE_BOT.INPUT_XLSX);
     }
 
     public AnswerBot pressBack(Update update) {
@@ -113,38 +67,30 @@ public class EventHandler {
             return start(update);
         else if(state.equals(STATE_BOT.INPUT_XLSX))
             return pressMenu(update);
+        else if(state.equals(STATE_BOT.ADMIN_SERVICE_MENU))
+            return pressMenu(update);
         return null;
     }
 
     public AnswerBot downloadExcel(Update update) {
         excelParser.deleteFileXlsx();
 
-        AnswerBot answer = new AnswerBot();
-        Message message = update.getMessage();
-        String chatId = String.valueOf(message.getChatId());
-        SendMessage sendMessage = new SendMessage();
-        sendMessage.setChatId(chatId);
-        answer.setAnswer(sendMessage);
-        MessageButtonView.setMessageButton(sendMessage, STATE_BOT.START.toString());
-
+        AnswerBot answer = null;
 
         String fileName = update.getMessage().getDocument().getFileName();
         String fileId = update.getMessage().getDocument().getFileId();
         try {
             uploadFile(fileName, fileId, botConfig.getCatalogXlsx());
-            sendMessage.setText(STATE_BOT.LOAD.getTextMessage());
-            MessageButtonView.setMessageButton(sendMessage, STATE_BOT.LOAD.toString());
-            stateDao.setState(STATE_BOT.LOAD, Long.valueOf(chatId));
+            answer = setCommonCallbackAnswer(update, STATE_BOT.LOAD);
         }
         catch (IOException e) {
             log.error("File download error: " + e.getMessage());
-            sendMessage.setText(STATE_BOT.ERROR_LOAD.getTextMessage());
-            MessageButtonView.setMessageButton(sendMessage, STATE_BOT.ERROR_LOAD.toString());
-            stateDao.setState(STATE_BOT.ERROR_LOAD, Long.valueOf(chatId));
+            answer = setCommonCallbackAnswer(update, STATE_BOT.ERROR_LOAD);
         }
         Thread th = new Thread(new Runnable() {
             @Override
             public void run() {
+                auguryResultDao.clearAuguryTables();
                 excelParser.parserXlsx(botConfig.getCatalogXlsx()+fileName);
             }
         });
@@ -152,7 +98,9 @@ public class EventHandler {
         return answer;
     }
 
-
+    public AnswerBot pressService(Update update) {
+        return setCommonCallbackAnswer(update, STATE_BOT.ADMIN_SERVICE_MENU);
+    }
 
     public AnswerBot commandNotSupport(Update update) {
         SendMessage send = new SendMessage(String.valueOf(update.getMessage().getChatId()), "Команда не поддерживается");
@@ -174,5 +122,30 @@ public class EventHandler {
         fos.close();
         rbc.close();
         log.info("File " + fileName + " download");
+    }
+
+    private AnswerBot setCommonCallbackAnswer(Update update, STATE_BOT stateBot) {
+        Message msg = update.getCallbackQuery().getMessage();
+        String chatId = String.valueOf(msg.getChatId());
+        long messageId = msg.getMessageId();
+        EditMessageText editMessage = new EditMessageText();
+        editMessage.setChatId(chatId);
+        editMessage.setText(stateBot.getTextMessage());
+        editMessage.setMessageId((int)messageId);
+        MessageButtonView.setMessageButton(editMessage, stateBot.toString());
+        AnswerBot answer = new AnswerBot(editMessage);
+        stateDao.setState(stateBot, Long.valueOf(chatId));
+
+        return answer;
+    }
+
+    private AnswerBot setCommonAnswer(Update update, STATE_BOT stateBot) {
+        AnswerBot answer = new AnswerBot();
+        Message message = update.getMessage();
+        String chatId = String.valueOf(message.getChatId());
+        SendMessage sendMessage = new SendMessage(chatId, STATE_BOT.START.getTextMessage());
+        MessageButtonView.setMessageButton(sendMessage, STATE_BOT.START.toString());
+        answer.setAnswer(sendMessage);
+        return answer;
     }
 }

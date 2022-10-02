@@ -1,8 +1,7 @@
 package com.everydaytarot.tarotelegrambot.dao;
 
 import com.everydaytarot.tarotelegrambot.config.BotConfig;
-import com.everydaytarot.tarotelegrambot.model.Role;
-import com.everydaytarot.tarotelegrambot.model.User;
+import com.everydaytarot.tarotelegrambot.model.user.User;
 import com.everydaytarot.tarotelegrambot.repository.UserRepository;
 import com.everydaytarot.tarotelegrambot.telegram.TelegramBot;
 import org.slf4j.Logger;

@@ -1,4 +1,4 @@
-package com.everydaytarot.tarotelegrambot.model;
+package com.everydaytarot.tarotelegrambot.model.telegram;
 
 import com.everydaytarot.tarotelegrambot.telegram.constant.STATE_BOT;
 

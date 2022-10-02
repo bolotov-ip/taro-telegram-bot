@@ -1,6 +1,6 @@
 package com.everydaytarot.tarotelegrambot.dao;
 
-import com.everydaytarot.tarotelegrambot.model.StateBotUser;
+import com.everydaytarot.tarotelegrambot.model.telegram.StateBotUser;
 import com.everydaytarot.tarotelegrambot.repository.StateBotUserRepository;
 import com.everydaytarot.tarotelegrambot.telegram.constant.STATE_BOT;
 import org.springframework.beans.factory.annotation.Autowired;

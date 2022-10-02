@@ -1,8 +1,8 @@
 package com.everydaytarot.tarotelegrambot.dao;
 
-import com.everydaytarot.tarotelegrambot.model.AuguryResult;
-import com.everydaytarot.tarotelegrambot.model.CardTaro;
-import com.everydaytarot.tarotelegrambot.model.TypeAugury;
+import com.everydaytarot.tarotelegrambot.model.augury.AuguryResult;
+import com.everydaytarot.tarotelegrambot.model.augury.CardTaro;
+import com.everydaytarot.tarotelegrambot.model.augury.TypeAugury;
 import com.everydaytarot.tarotelegrambot.repository.AuguryResultRepository;
 import com.everydaytarot.tarotelegrambot.repository.CardTaroRepository;
 import com.everydaytarot.tarotelegrambot.repository.TypeAuguryRepository;

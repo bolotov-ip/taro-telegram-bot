@@ -1,4 +1,4 @@
-package com.everydaytarot.tarotelegrambot.model;
+package com.everydaytarot.tarotelegrambot.model.augury;
 
 import javax.persistence.*;
 

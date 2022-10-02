@@ -1,4 +1,4 @@
-package com.everydaytarot.tarotelegrambot.model;
+package com.everydaytarot.tarotelegrambot.model.order;
 
 import javax.persistence.*;
 import java.sql.Timestamp;

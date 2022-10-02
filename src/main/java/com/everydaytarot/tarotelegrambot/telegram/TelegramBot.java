@@ -3,8 +3,7 @@ package com.everydaytarot.tarotelegrambot.telegram;
 import com.everydaytarot.tarotelegrambot.config.BotConfig;
 import com.everydaytarot.tarotelegrambot.dao.UserDao;
 import com.everydaytarot.tarotelegrambot.telegram.domain.AnswerBot;
-import com.everydaytarot.tarotelegrambot.model.Role;
-import com.everydaytarot.tarotelegrambot.model.User;
+import com.everydaytarot.tarotelegrambot.model.user.User;
 import com.everydaytarot.tarotelegrambot.repository.UserRepository;
 import com.everydaytarot.tarotelegrambot.telegram.handler.AdminHandler;
 import com.everydaytarot.tarotelegrambot.telegram.handler.Handler;
@@ -17,8 +16,6 @@ import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
-
-import java.util.Optional;
 
 @Component
 public class TelegramBot extends TelegramLongPollingBot {

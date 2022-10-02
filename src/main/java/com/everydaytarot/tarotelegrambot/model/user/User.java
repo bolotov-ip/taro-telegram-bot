@@ -1,4 +1,4 @@
-package com.everydaytarot.tarotelegrambot.model;
+package com.everydaytarot.tarotelegrambot.model.user;
 
 import org.telegram.telegrambots.meta.api.objects.Message;
 
@@ -23,7 +23,6 @@ public class User {
         user.setLastName(msg.getChat().getLastName());
         user.setDateRegistration(new Timestamp(System.currentTimeMillis()));
         user.setRole(Role.USER.toString());
-        user.setIdSubsciption(0L);
 
         return user;
     }
@@ -46,8 +45,6 @@ public class User {
     Timestamp dateRegistration;
 
     String role;
-
-    Long idSubsciption;
 
     public Long getIdChat() {
         return idChat;
@@ -97,13 +94,6 @@ public class User {
         this.role = role;
     }
 
-    public Long getIdSubsciption() {
-        return idSubsciption;
-    }
-
-    public void setIdSubsciption(Long idSubsciption) {
-        this.idSubsciption = idSubsciption;
-    }
 
     @Override
     public String toString() {
@@ -113,8 +103,7 @@ public class User {
                 ", firstName='" + firstName + '\'' +
                 ", lastName='" + lastName + '\'' +
                 ", dateRegistration=" + dateRegistration +
-                ", role='" + role + '\'' +
-                ", idSubsciption=" + idSubsciption +
+                ", role='" + role +
                 '}';
     }
 }
