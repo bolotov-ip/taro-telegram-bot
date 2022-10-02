@@ -64,7 +64,10 @@ public class TelegramBot extends TelegramLongPollingBot {
         Handler handler = user.isAdmin()?adminHandler:userHandler;
         AnswerBot answer = handler.run();
         try {
-            execute(answer.getAnswer());
+            if(answer.hasMessage())
+                execute(answer.getMessage());
+            else if(answer.hasDocument())
+                execute(answer.getDocument());
         } catch (TelegramApiException e) {
             log.error("Error occured: " + e.getMessage());
         }

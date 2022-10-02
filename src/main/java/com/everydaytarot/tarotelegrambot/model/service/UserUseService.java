@@ -1,11 +1,9 @@
 package com.everydaytarot.tarotelegrambot.model.service;
 
-import org.apache.poi.ss.formula.functions.T;
-
 import javax.persistence.*;
 import java.sql.Timestamp;
 
-@Entity(name = "user_limited")
+@Entity(name = "user_use_service")
 public class UserUseService {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -18,7 +16,17 @@ public class UserUseService {
 
     Integer countUseDay;
 
-    Timestamp endOfUseDay;
+    Timestamp dayLastUse;
+
+    Timestamp dayEndUse;
+
+    public Timestamp getDayLastUse() {
+        return dayLastUse;
+    }
+
+    public void setDayLastUse(Timestamp dayLastUse) {
+        this.dayLastUse = dayLastUse;
+    }
 
     public Long getId() {
         return id;
@@ -52,11 +60,11 @@ public class UserUseService {
         this.countUseDay = countUseDay;
     }
 
-    public Timestamp getEndOfUseDay() {
-        return endOfUseDay;
+    public Timestamp getDayEndUse() {
+        return dayEndUse;
     }
 
-    public void setEndOfUseDay(Timestamp endOfUseDay) {
-        this.endOfUseDay = endOfUseDay;
+    public void setDayEndUse(Timestamp dayEndUse) {
+        this.dayEndUse = dayEndUse;
     }
 }

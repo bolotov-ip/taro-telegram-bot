@@ -2,26 +2,43 @@ package com.everydaytarot.tarotelegrambot.telegram.domain;
 
 import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
 import org.telegram.telegrambots.meta.api.methods.send.SendDocument;
-import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
-import org.telegram.telegrambots.meta.api.methods.send.SendPhoto;
-import org.telegram.telegrambots.meta.api.methods.send.SendVideo;
-import org.telegram.telegrambots.meta.api.objects.Message;
 
 public class AnswerBot {
-    BotApiMethod<?> ans;
+    BotApiMethod<?> message;
+    SendDocument document;
+
+    public SendDocument getDocument() {
+        return document;
+    }
+
+    public void setDocument(SendDocument document) {
+        this.document = document;
+    }
 
     public AnswerBot() {
     }
 
     public AnswerBot(BotApiMethod<?> answer) {
-        ans = answer;
+        message = answer;
     }
 
-    public BotApiMethod<?> getAnswer() {
-        return ans;
+    public BotApiMethod<?> getMessage() {
+        return message;
     }
 
-    public void setAnswer(BotApiMethod<?> answer) {
-        this.ans = answer;
+    public void setMessage(BotApiMethod<?> answer) {
+        this.message = answer;
+    }
+
+    public boolean hasMessage() {
+        if(message !=null)
+            return true;
+        return false;
+    }
+
+    public boolean hasDocument() {
+        if(document !=null)
+            return true;
+        return false;
     }
 }

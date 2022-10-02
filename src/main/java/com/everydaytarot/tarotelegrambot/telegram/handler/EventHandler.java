@@ -65,9 +65,9 @@ public class EventHandler {
         AnswerBot answer = new AnswerBot();
         Message message = update.getMessage();
         String chatId = String.valueOf(message.getChatId());
-        SendMessage sendMessage = new SendMessage(chatId, STATE_BOT.ADMIN_START.getTextMessage());
+        SendMessage sendMessage = new SendMessage(chatId, stateBot.getTextMessage());
         setButton(btnList, sendMessage, countColumn);
-        answer.setAnswer(sendMessage);
+        answer.setMessage(sendMessage);
         return answer;
     }
 
@@ -80,6 +80,8 @@ public class EventHandler {
     }
 
     protected void setButton(List<BUTTONS> btnList, BotApiMethod<?> msg, int countColumn) {
+        if(btnList==null || btnList.size()==0)
+            return;
         InlineKeyboardMarkup markupInLine = new InlineKeyboardMarkup();
         List<List<InlineKeyboardButton>> rowsInLine = new ArrayList<>();
         List<InlineKeyboardButton> rowInLine = new ArrayList<>();
