@@ -1,4 +1,4 @@
-package com.everydaytarot.tarotelegrambot.model.service.order;
+package com.everydaytarot.tarotelegrambot.service.order;
 
 public interface OrderManger {
     public boolean addOrder();

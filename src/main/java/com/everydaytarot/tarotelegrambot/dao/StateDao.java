@@ -32,6 +32,6 @@ public class StateDao {
         if(state.isPresent())
             return STATE_BOT.valueOf(state.get().getStateBot());
         else
-            return STATE_BOT.START;
+            return STATE_BOT.ADMIN_START;
     }
 }

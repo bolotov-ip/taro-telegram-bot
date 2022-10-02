@@ -55,8 +55,8 @@ public class AdminHandler implements Handler{
             if(callbackData.equals(BUTTONS.BTN_ADMIN_MENU.toString())) {
                 return eventAdminHandler.pressMenu(update);
             }
-            else if(callbackData.equals(BUTTONS.BTN_ADMIN_ADD_XLSX.toString())) {
-                return eventAdminHandler.pressAddXLSX(update);
+            else if(callbackData.equals(BUTTONS.BTN_ADMIN_ADD_FILE.toString())) {
+                return eventAdminHandler.pressAddFile(update);
             }
             else if(callbackData.equals(BUTTONS.BTN_BACK.toString())) {
                 return eventAdminHandler.pressBack(update);
@@ -65,7 +65,7 @@ public class AdminHandler implements Handler{
                 return eventAdminHandler.start(update);
             }
             else if(callbackData.equals(BUTTONS.BTN_ADMIN_AGAIN_LOAD.toString())) {
-                return eventAdminHandler.pressAddXLSX(update);
+                return eventAdminHandler.pressAddFile(update);
             }
             else if(callbackData.equals(BUTTONS.BTN_CANCEL.toString())) {
                 return eventAdminHandler.pressBack(update);
@@ -73,10 +73,19 @@ public class AdminHandler implements Handler{
             else if(callbackData.equals(BUTTONS.BTN_ADMIN_SERVICE.toString())) {
                 return eventAdminHandler.pressService(update);
             }
+            else if(callbackData.equals(BUTTONS.BTN_ADMIN_ADD_XLSX_SERVICE.toString())) {
+                return eventAdminHandler.pressLoadServise(update);
+            }
+            else if(callbackData.equals(BUTTONS.BTN_ADMIN_ADD_XLSX_AUGURY.toString())) {
+                return eventAdminHandler.pressLoadAugury(update);
+            }
+            else if(callbackData.equals(BUTTONS.BTN_ADMIN_ADD_CARD_PHOTO.toString())) {
+                return eventAdminHandler.pressLoadCard(update);
+            }
         } else if(update.getMessage().hasDocument()) {
             STATE_BOT state = stateDao.getState(update.getMessage().getChatId());
-            if(state.equals(STATE_BOT.INPUT_XLSX)) {
-                return eventAdminHandler.downloadExcel(update);
+            if(state.equals(STATE_BOT.INPUT_XLSX_AUGURY) || state.equals(STATE_BOT.INPUT_XLSX_SERVICE)) {
+                return eventAdminHandler.downloadFile(update, state);
             }
         } else {
             return eventAdminHandler.commandNotSupport(update);

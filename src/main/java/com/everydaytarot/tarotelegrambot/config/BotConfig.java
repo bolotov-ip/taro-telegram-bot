@@ -23,8 +23,19 @@ public class BotConfig {
     @Value("${bot.catalog.card}")
     private String catalogCard;
 
-    @Value("${bot.catalog.xlsx}")
-    private String catalogXlsx;
+    @Value("${bot.catalog.augury}")
+    private String catalogAugury;
+
+    @Value("${bot.catalog.service}")
+    private String catalogService;
+
+    public String getCatalogService() {
+        return catalogService;
+    }
+
+    public void setCatalogService(String catalogService) {
+        this.catalogService = catalogService;
+    }
 
     public String getCatalogCard() {
         return catalogCard;
@@ -34,12 +45,12 @@ public class BotConfig {
         this.catalogCard = catalogCard;
     }
 
-    public String getCatalogXlsx() {
-        return catalogXlsx;
+    public String getCatalogAugury() {
+        return catalogAugury;
     }
 
-    public void setCatalogXlsx(String catalogXlsx) {
-        this.catalogXlsx = catalogXlsx;
+    public void setCatalogAugury(String catalogAugury) {
+        this.catalogAugury = catalogAugury;
     }
 
     public String getOwnerId() {

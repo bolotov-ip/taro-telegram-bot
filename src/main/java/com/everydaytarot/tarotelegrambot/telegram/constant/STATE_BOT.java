@@ -4,17 +4,20 @@ import java.util.HashMap;
 import java.util.Map;
 
 public enum STATE_BOT {
-    START, ADMIN_MENU, INPUT_XLSX, ERROR_LOAD, LOAD, USER_MENU, ADMIN_SERVICE_MENU;
+    ADMIN_START, ADMIN_MENU, ADMIN_ADD_FILE_MENU, INPUT_XLSX_AUGURY, INPUT_XLSX_SERVICE, INPUT_CARD, ERROR_LOAD, LOAD, USER_START, ADMIN_LIST_SERVICE, ADMIN_SHOW_SERVICES, ADMIN_DOWNLOAD_SERVICE_XLSX, ADMIN_DOWNLOAD_AUGURE_XLSX;
 
     private static Map<String, String> textMessage = new HashMap<String, String>();
     static {
-        textMessage.put("START", "Добро пожаловать");
+        textMessage.put("ADMIN_START", "Добро пожаловать");
         textMessage.put("ADMIN_MENU", "Меню");
-        textMessage.put("INPUT_XLSX", "Загрузите файл Excel c расширением xlsx, содержащий\n структуру и описание всех комбинаций результата");
+        textMessage.put("INPUT_XLSX_AUGURY", "Загрузите файл Excel c расширением xlsx, содержащий\n структуру и описание всех комбинаций результата");
+        textMessage.put("INPUT_XLSX_SERVICE", "Загрузите файл Excel c расширением xlsx, содержащий\n описание предоставляемых услуг");
         textMessage.put("LOAD", "Файл загружен успешно");
         textMessage.put("ERROR_LOAD", "Файл не загружен. Попробуйте снова");
-        textMessage.put("USER_MENU", "Привет! Хотите узнать что вас ждет сегодня?");
-        textMessage.put("ADMIN_SERVICE_MENU", "Услуги");
+        textMessage.put("USER_START", "Привет! Хотите узнать что вас ждет сегодня?");
+        textMessage.put("ADMIN_LIST_SERVICE", "Услуги");
+        textMessage.put("INPUT_CARD", "Загрузите фото карт");
+        textMessage.put("ADMIN_ADD_FILE_MENU", "Загрузить файлы для:");
     }
 
     public String getTextMessage() {

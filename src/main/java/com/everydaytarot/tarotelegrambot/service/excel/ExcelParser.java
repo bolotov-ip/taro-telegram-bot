@@ -1,4 +1,4 @@
-package com.everydaytarot.tarotelegrambot.model.service.excel;
+package com.everydaytarot.tarotelegrambot.service.excel;
 
 import com.everydaytarot.tarotelegrambot.config.BotConfig;
 import com.everydaytarot.tarotelegrambot.dao.AuguryResultDao;
@@ -13,14 +13,9 @@ import org.springframework.stereotype.Component;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 @Component
 public class ExcelParser {
@@ -69,11 +64,11 @@ public class ExcelParser {
 
     }
 
-    public void deleteFileXlsx() {
-        new File(botConfig.getCatalogXlsx()).mkdirs();
-        Path path= Paths.get(botConfig.getCatalogXlsx());
+    public void deleteFileXlsx(String catalog) {
+        new File(catalog).mkdirs();
+        Path path= Paths.get(catalog);
         if(Files.exists(path))
-            for (File myFile : new File(botConfig.getCatalogXlsx()).listFiles())
+            for (File myFile : new File(catalog).listFiles())
                 if (myFile.isFile()) myFile.delete();
     }
 }

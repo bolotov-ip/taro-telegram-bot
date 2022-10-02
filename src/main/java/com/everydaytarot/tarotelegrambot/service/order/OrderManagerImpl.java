@@ -1,4 +1,4 @@
-package com.everydaytarot.tarotelegrambot.model.service.order;
+package com.everydaytarot.tarotelegrambot.service.order;
 
 import com.everydaytarot.tarotelegrambot.model.order.Order;
 import com.everydaytarot.tarotelegrambot.repository.OrderRepository;
