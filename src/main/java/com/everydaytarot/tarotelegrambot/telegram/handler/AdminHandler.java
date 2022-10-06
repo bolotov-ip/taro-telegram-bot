@@ -84,14 +84,22 @@ public class AdminHandler implements Handler{
             }
             else if(callbackData.equals(BUTTONS.BTN_ADMIN_DOWNOLAD_FILE.toString())) {
                 STATE_BOT state = stateDao.getState(update.getCallbackQuery().getMessage().getChatId());
-                return eventAdminHandler.pressDownloadFile(update, state);
+                return eventAdminHandler.pressSendFile(update, state);
             }
-        } else if(update.getMessage().hasDocument()) {
+        }
+        else if(update.getMessage().hasDocument()) {
             STATE_BOT state = stateDao.getState(update.getMessage().getChatId());
             if(state.equals(STATE_BOT.INPUT_XLSX_AUGURY) || state.equals(STATE_BOT.INPUT_XLSX_SERVICE)) {
-                return eventAdminHandler.downloadFile(update, state);
+                return eventAdminHandler.getFile(update, state);
             }
-        } else {
+        }
+        else if(update.getMessage().hasPhoto()){
+            STATE_BOT state = stateDao.getState(update.getMessage().getChatId());
+            if(state.equals(STATE_BOT.INPUT_CARD)) {
+                return eventAdminHandler.getPhoto(update);
+            }
+        }
+        else {
             return eventAdminHandler.commandNotSupport(update);
         }
         return null;

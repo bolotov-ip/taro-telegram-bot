@@ -26,10 +26,10 @@ public class EventUserHandler extends EventHandler{
         listBtn.add(BUTTONS.BTN_USER_MENU);
         listBtn.add(BUTTONS.BTN_USER_START_SERVICE);
         if(update.hasCallbackQuery()) {
-            return setCommonCallbackAnswer(update, STATE_BOT.USER_START, listBtn, 2);
+            return setAnswer(update, STATE_BOT.USER_START, listBtn, 2);
         }
         else {
-            return setCommonCallbackAnswer(update, STATE_BOT.USER_START, listBtn, 2);
+            return setAnswer(update, STATE_BOT.USER_START, listBtn, 2);
         }
     }
 

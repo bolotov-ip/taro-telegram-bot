@@ -34,9 +34,6 @@ public class TelegramBot extends TelegramLongPollingBot {
     @Autowired
     BotConfig config;
 
-    @Autowired
-    UserRepository userRepository;
-
     @Override
     public String getBotUsername() {
         return config.getBotName();

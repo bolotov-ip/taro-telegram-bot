@@ -46,7 +46,14 @@ public class EventHandler {
         return answer;
     }
 
-    protected AnswerBot setCommonCallbackAnswer(Update update, STATE_BOT stateBot, List<BUTTONS> btnList, int countColumn) {
+    protected AnswerBot setAnswer(Update update, STATE_BOT stateBot, List<BUTTONS> btnList, int countColumn) {
+        if(update.hasCallbackQuery())
+            return setCommonCallbackAnswer(update, stateBot, btnList, countColumn);
+        else
+            return setCommonAnswer(update, stateBot, btnList, countColumn);
+    }
+
+    private AnswerBot setCommonCallbackAnswer(Update update, STATE_BOT stateBot, List<BUTTONS> btnList, int countColumn) {
         Message msg = update.getCallbackQuery().getMessage();
         String chatId = String.valueOf(msg.getChatId());
         long messageId = msg.getMessageId();
@@ -61,7 +68,7 @@ public class EventHandler {
         return answer;
     }
 
-    protected AnswerBot setCommonAnswer(Update update, STATE_BOT stateBot, List<BUTTONS> btnList, int countColumn) {
+    private AnswerBot setCommonAnswer(Update update, STATE_BOT stateBot, List<BUTTONS> btnList, int countColumn) {
         AnswerBot answer = new AnswerBot();
         Message message = update.getMessage();
         String chatId = String.valueOf(message.getChatId());

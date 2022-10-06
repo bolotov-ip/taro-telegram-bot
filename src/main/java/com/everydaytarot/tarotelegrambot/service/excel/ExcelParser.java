@@ -2,7 +2,9 @@ package com.everydaytarot.tarotelegrambot.service.excel;
 
 import com.everydaytarot.tarotelegrambot.config.BotConfig;
 import com.everydaytarot.tarotelegrambot.dao.AuguryResultDao;
+import com.everydaytarot.tarotelegrambot.dao.ServiceDao;
 import com.everydaytarot.tarotelegrambot.exception.ParseXlsxException;
+import com.everydaytarot.tarotelegrambot.model.service.Service;
 import com.everydaytarot.tarotelegrambot.telegram.TelegramBot;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
@@ -16,6 +18,8 @@ import java.io.FileInputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.List;
 
 @Component
 public class ExcelParser {
@@ -24,11 +28,61 @@ public class ExcelParser {
     AuguryResultDao auguryResultDao;
 
     @Autowired
-    BotConfig botConfig;
+    ServiceDao serviceDao;
 
     private final Logger log = LoggerFactory.getLogger(TelegramBot.class);
 
-    public void parserXlsx(String path){
+    public void parseXlsxService(String path) {
+        try {
+            int COUNT_COLUMN = 5;
+            int START_ROW = 2;
+            List<Service> serviceList = new ArrayList<>();
+
+            FileInputStream file = new FileInputStream(new File(path));
+            Workbook workbook = new XSSFWorkbook(file);
+
+            Sheet sheet = workbook.getSheetAt(0);
+
+            int indexRow = 0;
+            for (Row row : sheet) {
+                indexRow++;
+                if(indexRow < START_ROW)
+                    continue;
+
+
+                Service service = new Service();
+                for(int i=0; i<COUNT_COLUMN; i++) {
+                    String cellValue = "";
+                    Cell cell = row.getCell(i);
+                    if(cell.getCellType()!=null && cell.getCellType().equals(CellType.NUMERIC))
+                        cellValue = String.valueOf(((Double)cell.getNumericCellValue()).intValue());
+                    else if(cell.getCellType()!=null && cell.getCellType().equals(CellType.STRING))
+                        cellValue = cell.getStringCellValue();
+                    if(cellValue.equals(""))
+                        continue;
+                    if(i==0)
+                        service.setName(cellValue);
+                    else if(i==1)
+                        service.setDescription(cellValue);
+                    else if(i==2)
+                        service.setCountDay(Integer.valueOf(cellValue));
+                    else if(i==3)
+                        service.setCountUseDay(Integer.valueOf(cellValue));
+                    else if(i==4)
+                        service.setPrice(Long.valueOf(cellValue));
+                }
+                serviceList.add(service);
+            }
+            for(Service service : serviceList) {
+                serviceDao.addService(service);
+            }
+        }
+        catch (Exception e) {
+            log.error("ExcelParce error: " + e.getMessage());
+        }
+    }
+
+    public void parserXlsxAugury(String path){
         try {
             FileInputStream file = new FileInputStream(new File(path));
             Workbook workbook = new XSSFWorkbook(file);
