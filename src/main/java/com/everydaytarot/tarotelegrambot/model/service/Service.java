@@ -10,7 +10,7 @@ public class Service {
 
     String description;
 
-    Integer countUseDay;
+    Integer countUse;
 
     Integer countDay;
 
@@ -32,12 +32,12 @@ public class Service {
         this.description = description;
     }
 
-    public Integer getCountUseDay() {
-        return countUseDay;
+    public Integer getCountUse() {
+        return countUse;
     }
 
-    public void setCountUseDay(Integer countUseDay) {
-        this.countUseDay = countUseDay;
+    public void setCountUse(Integer countUse) {
+        this.countUse = countUse;
     }
 
     public Integer getCountDay() {

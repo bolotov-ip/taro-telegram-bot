@@ -7,7 +7,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.sql.*;
-import java.util.Optional;
+import java.util.*;
 
 @Component
 public class ServiceDao {
@@ -24,6 +24,14 @@ public class ServiceDao {
         return service.isPresent()?service.get():null;
     }
 
+    public List<Service> getAllService() {
+        Iterable<Service> allService = serviceRepository.findAll();
+        List<Service> result = new ArrayList<>();
+        allService.forEach(result::add);
+
+        return result;
+    }
+
     public void removeService(Service service) {
         serviceRepository.delete(service);
     }
@@ -31,30 +39,4 @@ public class ServiceDao {
     public void removeAllService() {
         serviceRepository.deleteAll();
     }
-
-    //На случай если понадобится увеличить быстродействие
-
-    @Value("${spring.datasource.url}")
-    private String urlDatabase;
-
-    @Value("${spring.datasource.username}")
-    private String username;
-
-    @Value("${spring.datasource.password}")
-    private String password;
-
-    public void testConnection() throws SQLException {
-        Connection connection = DriverManager.getConnection(urlDatabase, username, password);
-        String updatePositionSql = "select * from users";
-        try (PreparedStatement pstmt = connection.prepareStatement(updatePositionSql); ResultSet rs = pstmt.executeQuery();) {
-            while(rs.next()) {
-                String field = rs.getString(1);
-                System.out.println(field);
-            }
-        }
-        connection.close();
-    }
-
-
-
 }

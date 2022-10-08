@@ -7,6 +7,7 @@ import com.everydaytarot.tarotelegrambot.telegram.TelegramBot;
 import com.everydaytarot.tarotelegrambot.telegram.constant.BUTTONS;
 import com.everydaytarot.tarotelegrambot.telegram.domain.AnswerBot;
 import com.everydaytarot.tarotelegrambot.telegram.constant.STATE_BOT;
+import com.everydaytarot.tarotelegrambot.telegram.domain.CallbackButton;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,7 +15,6 @@ import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.methods.send.SendDocument;
 import org.telegram.telegrambots.meta.api.objects.InputFile;
 import org.telegram.telegrambots.meta.api.objects.Message;
-import org.telegram.telegrambots.meta.api.objects.PhotoSize;
 import org.telegram.telegrambots.meta.api.objects.Update;
 
 import java.io.File;
@@ -40,9 +40,9 @@ public class EventAdminHandler extends EventHandler{
     private final Logger log = LoggerFactory.getLogger(TelegramBot.class);
 
     public AnswerBot start(Update update) {
-        List<BUTTONS> listBtn = new ArrayList<>();
-        listBtn.add(BUTTONS.BTN_ADMIN_ORDER_BUTTON);
-        listBtn.add(BUTTONS.BTN_ADMIN_MENU);
+        List<CallbackButton> listBtn = new ArrayList<>();
+        listBtn.add(new CallbackButton(BUTTONS.BTN_ADMIN_ORDER_BUTTON));
+        listBtn.add(new CallbackButton(BUTTONS.BTN_ADMIN_MENU));
         if(update.hasCallbackQuery()) {
             return setAnswer(update, STATE_BOT.ADMIN_START, listBtn, 2);
         }
@@ -52,42 +52,34 @@ public class EventAdminHandler extends EventHandler{
     }
 
     public AnswerBot pressMenu(Update update) {
-        List<BUTTONS> listBtn = new ArrayList<>();
-        listBtn.add(BUTTONS.BTN_BACK);
-        listBtn.add(BUTTONS.BTN_ADMIN_ADD_FILE);
-        listBtn.add(BUTTONS.BTN_ADMIN_SERVICE);
+        List<CallbackButton> listBtn = new ArrayList<>();
+        listBtn.add(new CallbackButton(BUTTONS.BTN_BACK));
+        listBtn.add(new CallbackButton(BUTTONS.BTN_ADMIN_ADD_FILE));
         return setAnswer(update, STATE_BOT.ADMIN_MENU, listBtn, 2);
     }
 
     public AnswerBot pressAddFile(Update update) {
-        List<BUTTONS> listBtn = new ArrayList<>();
-        listBtn.add(BUTTONS.BTN_ADMIN_ADD_XLSX_SERVICE);
-        listBtn.add(BUTTONS.BTN_ADMIN_ADD_XLSX_AUGURY);
-        listBtn.add(BUTTONS.BTN_ADMIN_ADD_CARD_PHOTO);
-        listBtn.add(BUTTONS.BTN_BACK);
+        List<CallbackButton> listBtn = new ArrayList<>();
+        listBtn.add(new CallbackButton(BUTTONS.BTN_ADMIN_ADD_XLSX_SERVICE));
+        listBtn.add(new CallbackButton(BUTTONS.BTN_ADMIN_ADD_XLSX_AUGURY));
+        listBtn.add(new CallbackButton(BUTTONS.BTN_BACK));
         return setAnswer(update, STATE_BOT.ADMIN_ADD_FILE_MENU, listBtn, 1);
     }
 
     public AnswerBot pressLoadServise(Update update) {
-        List<BUTTONS> listBtn = new ArrayList<>();
-        listBtn.add(BUTTONS.BTN_CANCEL);
-        listBtn.add(BUTTONS.BTN_ADMIN_DOWNOLAD_FILE);
+        List<CallbackButton> listBtn = new ArrayList<>();
+        listBtn.add(new CallbackButton(BUTTONS.BTN_CANCEL));
+        listBtn.add(new CallbackButton(BUTTONS.BTN_ADMIN_DOWNOLAD_FILE));
         return setAnswer(update, STATE_BOT.INPUT_XLSX_SERVICE, listBtn, 1);
     }
 
     public AnswerBot pressLoadAugury(Update update) {
-        List<BUTTONS> listBtn = new ArrayList<>();
-        listBtn.add(BUTTONS.BTN_CANCEL);
-        listBtn.add(BUTTONS.BTN_ADMIN_DOWNOLAD_FILE);
+        List<CallbackButton> listBtn = new ArrayList<>();
+        listBtn.add(new CallbackButton(BUTTONS.BTN_CANCEL));
+        listBtn.add(new CallbackButton(BUTTONS.BTN_ADMIN_DOWNOLAD_FILE));
         return setAnswer(update, STATE_BOT.INPUT_XLSX_AUGURY, listBtn, 1);
     }
 
-    public AnswerBot pressLoadCard(Update update) {
-        List<BUTTONS> listBtn = new ArrayList<>();
-        listBtn.add(BUTTONS.BTN_CANCEL);
-        listBtn.add(BUTTONS.BTN_ADMIN_DOWNOLAD_FILE);
-        return setAnswer(update, STATE_BOT.INPUT_CARD, listBtn, 1);
-    }
 
     public AnswerBot pressSendFile(Update update, STATE_BOT state) {
         String catalog = "";
@@ -120,31 +112,9 @@ public class EventAdminHandler extends EventHandler{
             return start(update);
         else if(state.equals(STATE_BOT.INPUT_XLSX_AUGURY) || state.equals(STATE_BOT.INPUT_XLSX_SERVICE) ||  state.equals(STATE_BOT.INPUT_CARD))
             return pressAddFile(update);
-        else if(state.equals(STATE_BOT.ADMIN_LIST_SERVICE) || state.equals(STATE_BOT.ADMIN_ADD_FILE_MENU))
+        else if(state.equals(STATE_BOT.ADMIN_ADD_FILE_MENU))
             return pressMenu(update);
         return null;
-    }
-
-    public AnswerBot getPhoto(Update update) {
-        List<PhotoSize> listImage = update.getMessage().getPhoto();
-        String catalog = botConfig.getCatalogCard();
-        for(PhotoSize image : listImage) {
-            String fileName = image.getFileUniqueId();
-            String fileId = image.getFileId();
-            try {
-                uploadFile(fileName, fileId, catalog);
-            }
-            catch (IOException e) {
-                log.error("File download image error: " + e.getMessage());
-                List<BUTTONS> listBtn = new ArrayList<>();
-                listBtn.add(BUTTONS.BTN_BACK_TO_START);
-                listBtn.add(BUTTONS.BTN_ADMIN_AGAIN_LOAD);
-                return setAnswer(update, STATE_BOT.ERROR_LOAD, listBtn, 2);
-            }
-        }
-        List<BUTTONS> listBtn = new ArrayList<>();
-        listBtn.add(BUTTONS.BTN_BACK_TO_START);
-        return setAnswer(update, STATE_BOT.INPUT_CARD, listBtn, 2);
     }
 
     public AnswerBot getFile(Update update, STATE_BOT state) {
@@ -161,11 +131,11 @@ public class EventAdminHandler extends EventHandler{
         else if(state.equals(STATE_BOT.INPUT_XLSX_SERVICE)) {
             catalog = botConfig.getCatalogService();
         }
-        excelParser.deleteFileXlsx(catalog);
+        deleteFile(catalog);
         try {
             String path = uploadFile(fileName, fileId, catalog);
-            List<BUTTONS> listBtn = new ArrayList<>();
-            listBtn.add(BUTTONS.BTN_BACK_TO_START);
+            List<CallbackButton> listBtn = new ArrayList<>();
+            listBtn.add(new CallbackButton(BUTTONS.BTN_BACK_TO_START));
             answer = setAnswer(update, STATE_BOT.LOAD, listBtn, 2);
             Thread th = new Thread(new Runnable() {
                 @Override
@@ -185,23 +155,12 @@ public class EventAdminHandler extends EventHandler{
         }
         catch (IOException e) {
             log.error("File download error: " + e.getMessage());
-            List<BUTTONS> listBtn = new ArrayList<>();
-            listBtn.add(BUTTONS.BTN_BACK_TO_START);
-            listBtn.add(BUTTONS.BTN_ADMIN_AGAIN_LOAD);
+            List<CallbackButton> listBtn = new ArrayList<>();
+            listBtn.add(new CallbackButton(BUTTONS.BTN_BACK_TO_START));
+            listBtn.add(new CallbackButton(BUTTONS.BTN_ADMIN_AGAIN_LOAD));
             answer = setAnswer(update, STATE_BOT.ERROR_LOAD, listBtn, 2);
         }
         return answer;
     }
 
-    public AnswerBot pressService(Update update) {
-        List<BUTTONS> listBtn = new ArrayList<>();
-        listBtn.add(BUTTONS.BTN_BACK);
-        listBtn.add(BUTTONS.BTN_ADMIN_SHOW_SERVICE);
-        listBtn.add(BUTTONS.BTN_ADMIN_ADD_SERVICE);
-        return setAnswer(update, STATE_BOT.ADMIN_LIST_SERVICE, listBtn, 2);
-    }
-
-    public AnswerBot showService(Update update) {
-        return null;
-    }
 }

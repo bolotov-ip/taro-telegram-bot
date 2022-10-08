@@ -2,7 +2,9 @@ package com.everydaytarot.tarotelegrambot.telegram.handler;
 
 import com.everydaytarot.tarotelegrambot.dao.StateDao;
 import com.everydaytarot.tarotelegrambot.telegram.TelegramBot;
+import com.everydaytarot.tarotelegrambot.telegram.constant.BUTTONS;
 import com.everydaytarot.tarotelegrambot.telegram.constant.COMMANDS;
+import com.everydaytarot.tarotelegrambot.telegram.constant.STATE_BOT;
 import com.everydaytarot.tarotelegrambot.telegram.domain.AnswerBot;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -46,6 +48,21 @@ public class UserHandler implements Handler{
                 return eventUserHandler.commandNotSupport(update);
             }
 
+        }
+        else if(update.hasCallbackQuery()) {
+            String callbackData = update.getCallbackQuery().getData();
+
+            if(callbackData.equals(BUTTONS.BTN_USER_MENU_SERVICE.toString())) {
+                return eventUserHandler.getListService(update);
+            }
+            else if(callbackData.equals(BUTTONS.BTN_BACK.toString())) {
+                return eventUserHandler.back(update);
+            }
+            STATE_BOT state = stateDao.getState(update.getCallbackQuery().getMessage().getChatId());
+            if(state.equals(STATE_BOT.USER_SERVICE_LIST)){
+                return eventUserHandler.getServiceDetails(update);
+            }
+            return null;
         }
         else {
             return eventUserHandler.commandNotSupport(update);

@@ -70,17 +70,11 @@ public class AdminHandler implements Handler{
             else if(callbackData.equals(BUTTONS.BTN_CANCEL.toString())) {
                 return eventAdminHandler.pressBack(update);
             }
-            else if(callbackData.equals(BUTTONS.BTN_ADMIN_SERVICE.toString())) {
-                return eventAdminHandler.pressService(update);
-            }
             else if(callbackData.equals(BUTTONS.BTN_ADMIN_ADD_XLSX_SERVICE.toString())) {
                 return eventAdminHandler.pressLoadServise(update);
             }
             else if(callbackData.equals(BUTTONS.BTN_ADMIN_ADD_XLSX_AUGURY.toString())) {
                 return eventAdminHandler.pressLoadAugury(update);
-            }
-            else if(callbackData.equals(BUTTONS.BTN_ADMIN_ADD_CARD_PHOTO.toString())) {
-                return eventAdminHandler.pressLoadCard(update);
             }
             else if(callbackData.equals(BUTTONS.BTN_ADMIN_DOWNOLAD_FILE.toString())) {
                 STATE_BOT state = stateDao.getState(update.getCallbackQuery().getMessage().getChatId());
@@ -91,12 +85,6 @@ public class AdminHandler implements Handler{
             STATE_BOT state = stateDao.getState(update.getMessage().getChatId());
             if(state.equals(STATE_BOT.INPUT_XLSX_AUGURY) || state.equals(STATE_BOT.INPUT_XLSX_SERVICE)) {
                 return eventAdminHandler.getFile(update, state);
-            }
-        }
-        else if(update.getMessage().hasPhoto()){
-            STATE_BOT state = stateDao.getState(update.getMessage().getChatId());
-            if(state.equals(STATE_BOT.INPUT_CARD)) {
-                return eventAdminHandler.getPhoto(update);
             }
         }
         else {

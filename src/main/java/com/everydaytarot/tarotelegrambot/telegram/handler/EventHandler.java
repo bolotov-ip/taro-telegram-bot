@@ -6,6 +6,8 @@ import com.everydaytarot.tarotelegrambot.telegram.TelegramBot;
 import com.everydaytarot.tarotelegrambot.telegram.constant.BUTTONS;
 import com.everydaytarot.tarotelegrambot.telegram.constant.STATE_BOT;
 import com.everydaytarot.tarotelegrambot.telegram.domain.AnswerBot;
+import com.everydaytarot.tarotelegrambot.telegram.domain.CallbackButton;
+import com.vdurmont.emoji.EmojiParser;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,17 +21,16 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
 
-import java.io.BufferedReader;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.net.URL;
 import java.nio.channels.Channels;
 import java.nio.channels.ReadableByteChannel;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
-@Component
 public class EventHandler {
 
     @Autowired
@@ -46,20 +47,20 @@ public class EventHandler {
         return answer;
     }
 
-    protected AnswerBot setAnswer(Update update, STATE_BOT stateBot, List<BUTTONS> btnList, int countColumn) {
+    protected AnswerBot setAnswer(Update update, STATE_BOT stateBot, List<CallbackButton> btnList, int countColumn) {
         if(update.hasCallbackQuery())
             return setCommonCallbackAnswer(update, stateBot, btnList, countColumn);
         else
             return setCommonAnswer(update, stateBot, btnList, countColumn);
     }
 
-    private AnswerBot setCommonCallbackAnswer(Update update, STATE_BOT stateBot, List<BUTTONS> btnList, int countColumn) {
+    private AnswerBot setCommonCallbackAnswer(Update update, STATE_BOT stateBot, List<CallbackButton> btnList, int countColumn) {
         Message msg = update.getCallbackQuery().getMessage();
         String chatId = String.valueOf(msg.getChatId());
         long messageId = msg.getMessageId();
         EditMessageText editMessage = new EditMessageText();
         editMessage.setChatId(chatId);
-        editMessage.setText(stateBot.getTextMessage());
+        editMessage.setText(EmojiParser.parseToUnicode(stateBot.getTextMessage()));
         editMessage.setMessageId((int)messageId);
         setButton(btnList, editMessage, countColumn);
         AnswerBot answer = new AnswerBot(editMessage);
@@ -68,11 +69,11 @@ public class EventHandler {
         return answer;
     }
 
-    private AnswerBot setCommonAnswer(Update update, STATE_BOT stateBot, List<BUTTONS> btnList, int countColumn) {
+    private AnswerBot setCommonAnswer(Update update, STATE_BOT stateBot, List<CallbackButton> btnList, int countColumn) {
         AnswerBot answer = new AnswerBot();
         Message message = update.getMessage();
         String chatId = String.valueOf(message.getChatId());
-        SendMessage sendMessage = new SendMessage(chatId, stateBot.getTextMessage());
+        SendMessage sendMessage = new SendMessage(chatId, EmojiParser.parseToUnicode(stateBot.getTextMessage()));
         setButton(btnList, sendMessage, countColumn);
         answer.setMessage(sendMessage);
         return answer;
@@ -86,18 +87,18 @@ public class EventHandler {
         }
     }
 
-    protected void setButton(List<BUTTONS> btnList, BotApiMethod<?> msg, int countColumn) {
+    protected void setButton(List<CallbackButton> btnList, BotApiMethod<?> msg, int countColumn) {
         if(btnList==null || btnList.size()==0)
             return;
         InlineKeyboardMarkup markupInLine = new InlineKeyboardMarkup();
         List<List<InlineKeyboardButton>> rowsInLine = new ArrayList<>();
         List<InlineKeyboardButton> rowInLine = new ArrayList<>();
         int countAddRowBtn = 0;
-        for(BUTTONS btn : btnList) {
+        for(CallbackButton btn : btnList) {
             if(countAddRowBtn<countColumn){
                 InlineKeyboardButton button = new InlineKeyboardButton();
                 button.setText(btn.getText());
-                button.setCallbackData(btn.toString());
+                button.setCallbackData(btn.getCallbackData());
                 rowInLine.add(button);
                 countAddRowBtn++;
             }
@@ -106,7 +107,7 @@ public class EventHandler {
                 rowInLine = new ArrayList<>();
                 InlineKeyboardButton button = new InlineKeyboardButton();
                 button.setText(btn.getText());
-                button.setCallbackData(btn.toString());
+                button.setCallbackData(btn.getCallbackData());
                 rowInLine.add(button);
                 countAddRowBtn=1;
             }
@@ -132,5 +133,13 @@ public class EventHandler {
         rbc.close();
         log.info("File " + fileName + " download");
         return pathFile + fileName;
+    }
+
+    protected void deleteFile(String catalog) {
+        new File(catalog).mkdirs();
+        Path path= Paths.get(catalog);
+        if(Files.exists(path))
+            for (File myFile : new File(catalog).listFiles())
+                if (myFile.isFile()) myFile.delete();
     }
 }

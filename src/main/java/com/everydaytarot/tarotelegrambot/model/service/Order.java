@@ -1,6 +1,7 @@
 package com.everydaytarot.tarotelegrambot.model.service;
 
 import javax.persistence.*;
+import java.sql.Date;
 import java.sql.Timestamp;
 
 @Entity(name = "user_use_service")
@@ -11,7 +12,7 @@ public class Order {
 
     Integer countUseDay;
 
-    Timestamp dayLastUse;
+    Date dayLastUse;
 
     Timestamp dayEndUse;
 
@@ -23,11 +24,11 @@ public class Order {
         this.orderId = orderId;
     }
 
-    public Timestamp getDayLastUse() {
+    public Date getDayLastUse() {
         return dayLastUse;
     }
 
-    public void setDayLastUse(Timestamp dayLastUse) {
+    public void setDayLastUse(Date dayLastUse) {
         this.dayLastUse = dayLastUse;
     }
 

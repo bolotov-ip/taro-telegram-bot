@@ -1,6 +1,5 @@
 package com.everydaytarot.tarotelegrambot.service.excel;
 
-import com.everydaytarot.tarotelegrambot.config.BotConfig;
 import com.everydaytarot.tarotelegrambot.dao.AuguryResultDao;
 import com.everydaytarot.tarotelegrambot.dao.ServiceDao;
 import com.everydaytarot.tarotelegrambot.exception.ParseXlsxException;
@@ -15,9 +14,6 @@ import org.springframework.stereotype.Component;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -67,7 +63,7 @@ public class ExcelParser {
                     else if(i==2)
                         service.setCountDay(Integer.valueOf(cellValue));
                     else if(i==3)
-                        service.setCountUseDay(Integer.valueOf(cellValue));
+                        service.setCountUse(Integer.valueOf(cellValue));
                     else if(i==4)
                         service.setPrice(Long.valueOf(cellValue));
                 }
@@ -118,11 +114,4 @@ public class ExcelParser {
 
     }
 
-    public void deleteFileXlsx(String catalog) {
-        new File(catalog).mkdirs();
-        Path path= Paths.get(catalog);
-        if(Files.exists(path))
-            for (File myFile : new File(catalog).listFiles())
-                if (myFile.isFile()) myFile.delete();
-    }
 }
