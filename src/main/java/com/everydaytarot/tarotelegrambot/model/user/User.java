@@ -23,6 +23,7 @@ public class User {
         user.setLastName(msg.getChat().getLastName());
         user.setDateRegistration(new Timestamp(System.currentTimeMillis()));
         user.setRole(Role.USER.toString());
+        user.setShirt("");
 
         return user;
     }
@@ -45,6 +46,16 @@ public class User {
     Timestamp dateRegistration;
 
     String role;
+
+    String shirt;
+
+    public String getShirt() {
+        return shirt;
+    }
+
+    public void setShirt(String shirt) {
+        this.shirt = shirt;
+    }
 
     public Long getIdChat() {
         return idChat;

@@ -1,16 +1,24 @@
 package com.everydaytarot.tarotelegrambot.telegram.handler;
 
+import com.everydaytarot.tarotelegrambot.dao.UserDao;
 import com.everydaytarot.tarotelegrambot.model.service.Service;
-import com.everydaytarot.tarotelegrambot.service.card_day.CardOfTheDayService;
+import com.everydaytarot.tarotelegrambot.model.user.User;
+import com.everydaytarot.tarotelegrambot.service.card_day.CardDayService;
+import com.everydaytarot.tarotelegrambot.telegram.TelegramBot;
 import com.everydaytarot.tarotelegrambot.telegram.constant.BUTTONS;
 import com.everydaytarot.tarotelegrambot.telegram.constant.STATE_BOT;
 import com.everydaytarot.tarotelegrambot.telegram.domain.AnswerBot;
 import com.everydaytarot.tarotelegrambot.telegram.domain.CallbackButton;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.telegram.telegrambots.meta.api.methods.AnswerPreCheckoutQuery;
+import org.telegram.telegrambots.meta.api.methods.send.SendInvoice;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
+import org.telegram.telegrambots.meta.api.objects.payments.LabeledPrice;
+import org.telegram.telegrambots.meta.api.objects.payments.PreCheckoutQuery;
+import org.telegram.telegrambots.meta.api.objects.payments.SuccessfulPayment;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,7 +27,10 @@ import java.util.List;
 public class EventUserHandler extends EventHandler{
 
     @Autowired
-    CardOfTheDayService cardOfTheDayService;
+    CardDayService cardDayService;
+
+    @Autowired
+    UserDao userDao;
 
     public AnswerBot start(Update update) {
         List<CallbackButton> listBtn = new ArrayList<>();
@@ -30,7 +41,7 @@ public class EventUserHandler extends EventHandler{
 
     public AnswerBot getListService(Update update) {
         List<CallbackButton> listBtn = new ArrayList<>();
-        List<String> listNamesService = cardOfTheDayService.getListServiceName();
+        List<String> listNamesService = cardDayService.getListServiceName();
         for(String nameService : listNamesService)
             listBtn.add(new CallbackButton(nameService));
         listBtn.add(new CallbackButton(BUTTONS.BTN_BACK));
@@ -39,7 +50,8 @@ public class EventUserHandler extends EventHandler{
 
     public AnswerBot getServiceDetails(Update update) {
         String callbackData = update.getCallbackQuery().getData();
-        Service service = cardOfTheDayService.getService(callbackData);
+        stateDao.setSelectService(callbackData, update.getCallbackQuery().getMessage().getChatId());
+        Service service = cardDayService.getService(callbackData);
         String description = service.getDescription();
         List<CallbackButton> listBtn = new ArrayList<>();
         listBtn.add(new CallbackButton(BUTTONS.BTN_BACK));
@@ -49,8 +61,62 @@ public class EventUserHandler extends EventHandler{
         return answer;
     }
 
-    public AnswerBot startService(Update update) {
-        return null;
+    public AnswerBot getTypeAugury(Update update) {
+        String callbackData = update.getCallbackQuery().getData();
+        List<String> listTypeAugury = cardDayService.getTypesAugury();
+        List<CallbackButton> listBtn = new ArrayList<>();
+        for(String type : listTypeAugury) {
+            listBtn.add(new CallbackButton(type));
+        }
+        listBtn.add(new CallbackButton(BUTTONS.BTN_BACK));
+        AnswerBot answer = setAnswer(update, STATE_BOT.USER_SELECT_CATEGORY, listBtn, 2);
+        return answer;
+    }
+
+    public AnswerBot selectTypeAugury(Update update, TelegramBot bot) {
+        String callbackData = update.getCallbackQuery().getData();
+        Long chatId = update.getCallbackQuery().getMessage().getChatId();
+        stateDao.setSelectAugury(callbackData, chatId);
+        Service service = cardDayService.getService(stateDao.getSelectService(chatId));
+        if(service.getPrice()>0) {
+            List<CallbackButton> listBtn = new ArrayList<>();
+            listBtn.add(new CallbackButton(BUTTONS.BTN_BACK));
+            listBtn.add(new CallbackButton(BUTTONS.BTN_USER_PAY));
+            AnswerBot answer = setAnswer(update, STATE_BOT.USER_PAY, listBtn , 2);
+            return answer;
+        }
+        else {
+            List<CallbackButton> listBtn = new ArrayList<>();
+            listBtn.add(new CallbackButton(BUTTONS.BTN_BACK));
+            AnswerBot answer = setAnswer(update, STATE_BOT.USER_FINISH, listBtn , 1);
+            cardDayService.startService(String.valueOf(chatId), service.getName(), bot);
+            return answer;
+        }
+    }
+
+    public AnswerBot pay(Update update) {
+
+        SendInvoice sendInvoice = SendInvoice.builder()
+                .chatId(String.valueOf(update.getCallbackQuery().getMessage().getChatId()))
+                .currency("RUB")
+                .providerToken("1744374395:TEST:174bea79d9843e519613")
+                .title("Тест")
+                .startParameter("start_param")
+                .description("Тест")
+                .payload("Тест")
+                .providerData("{\"save_card\": true }")
+                .price(new LabeledPrice("Тест",10000))
+                .build();
+        AnswerBot answer = new AnswerBot();
+        answer.setMessage(sendInvoice);
+        return answer;
+    }
+
+    public AnswerBot createOrder(Update update) {
+        List<CallbackButton> listBtn = new ArrayList<>();
+        listBtn.add(new CallbackButton(BUTTONS.BTN_BACK_TO_START));
+        AnswerBot answer = setAnswer(update, STATE_BOT.USER_FINISH, listBtn , 2);
+        return answer;
     }
 
     public AnswerBot back(Update update) {
@@ -60,7 +126,16 @@ public class EventUserHandler extends EventHandler{
             return start(update);
         else if(state.equals(STATE_BOT.USER_SERVICE_DETAILS))
             return getListService(update);
+        else if(state.equals(STATE_BOT.USER_SELECT_CATEGORY))
+            return getServiceDetails(update);
+        else if(state.equals(STATE_BOT.USER_FINISH))
+            return getListService(update);
+        else if(state.equals(STATE_BOT.USER_PAY))
+            return getTypeAugury(update);
         return null;
     }
 
+    public AnswerBot backToStart(Update update) {
+        return start(update);
+    }
 }

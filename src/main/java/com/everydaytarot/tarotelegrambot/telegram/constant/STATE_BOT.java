@@ -5,7 +5,7 @@ import java.util.Map;
 
 public enum STATE_BOT {
     ADMIN_START, ADMIN_MENU, ADMIN_ADD_FILE_MENU, INPUT_XLSX_AUGURY, INPUT_XLSX_SERVICE, INPUT_CARD, ERROR_LOAD, LOAD, USER_START,
-    ADMIN_FILE_NOT_FOUND, USER_SERVICE_LIST, USER_SERVICE_DETAILS;
+    ADMIN_FILE_NOT_FOUND, USER_SERVICE_LIST, USER_SERVICE_DETAILS, USER_SELECT_CATEGORY, USER_PAY, USER_FINISH;
 
     private static Map<String, String> textMessage = new HashMap<String, String>();
     static {
@@ -21,6 +21,9 @@ public enum STATE_BOT {
         textMessage.put("ADMIN_FILE_NOT_FOUND", "Файл не найден");
         textMessage.put("USER_SERVICE_LIST", "Список услуг");
         textMessage.put("USER_SERVICE_DETAILS", "Подробности");
+        textMessage.put("USER_SELECT_CATEGORY", "На что будем гадать?");
+        textMessage.put("USER_PAY", "Оплатить услугу?");
+        textMessage.put("USER_FINISH", "Заказ создан успешно.");
     }
 
     public String getTextMessage() {

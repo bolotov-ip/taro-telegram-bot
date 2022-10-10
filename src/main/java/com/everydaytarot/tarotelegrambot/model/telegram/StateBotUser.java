@@ -12,6 +12,8 @@ public class StateBotUser {
         StateBotUser stateBotUser = new StateBotUser();
         stateBotUser.setChatId(chatId);
         stateBotUser.setStateBot(state.toString());
+        stateBotUser.setSelectAugury("");
+        stateBotUser.setSelectService("");
         return stateBotUser;
     }
 
@@ -19,6 +21,26 @@ public class StateBotUser {
     Long chatId;
 
     String stateBot;
+
+    String selectAugury;
+
+    String selectService;
+
+    public String getSelectService() {
+        return selectService;
+    }
+
+    public void setSelectService(String selectService) {
+        this.selectService = selectService;
+    }
+
+    public String getSelectAugury() {
+        return selectAugury;
+    }
+
+    public void setSelectAugury(String selectAugury) {
+        this.selectAugury = selectAugury;
+    }
 
     public Long getChatId() {
         return chatId;

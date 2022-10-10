@@ -19,6 +19,8 @@ public class ImageManager {
     }
 
     public File getFileImageCard(String nameCard, String nameShirt) {
+        if(nameCard ==null || nameShirt == null)
+            return null;
         for (File myFile : new File(botConfig.getCatalogCard()).listFiles())
             if (myFile.isDirectory()) {
                 if(nameShirt.equals(myFile.getName())) {

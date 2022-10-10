@@ -14,6 +14,7 @@ public enum BUTTONS {
     BTN_ADMIN_DOWNOLAD_FILE("Скачать файл с сервера"),
     BTN_USER_MENU("Меню"),
     BTN_USER_MENU_SERVICE("Получить предсказание"),
+    BTN_USER_PAY("Оплатить"),
     BTN_USER_START_SERVICE("Начать");
 
     private String text;

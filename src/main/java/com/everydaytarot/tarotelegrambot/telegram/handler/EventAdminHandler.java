@@ -37,7 +37,7 @@ public class EventAdminHandler extends EventHandler{
     @Autowired
     ExcelParser excelParser;
 
-    private final Logger log = LoggerFactory.getLogger(TelegramBot.class);
+    private final Logger log = LoggerFactory.getLogger(EventAdminHandler.class);
 
     public AnswerBot start(Update update) {
         List<CallbackButton> listBtn = new ArrayList<>();

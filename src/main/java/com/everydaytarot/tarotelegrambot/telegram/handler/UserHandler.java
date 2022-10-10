@@ -10,6 +10,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.telegram.telegrambots.meta.api.methods.AnswerPreCheckoutQuery;
 import org.telegram.telegrambots.meta.api.objects.Update;
 
 @Component
@@ -37,7 +38,10 @@ public class UserHandler implements Handler{
 
     @Override
     public AnswerBot run() {
-        if (update.hasMessage() && update.getMessage().hasText()) {
+        if(update.hasMessage() && update.getMessage().hasSuccessfulPayment()) {
+            return eventUserHandler.createOrder(update);
+        }
+        else if (update.hasMessage() && update.getMessage().hasText()) {
 
             String textMessage = update.getMessage().getText();
 
@@ -58,9 +62,22 @@ public class UserHandler implements Handler{
             else if(callbackData.equals(BUTTONS.BTN_BACK.toString())) {
                 return eventUserHandler.back(update);
             }
+            else if(callbackData.equals(BUTTONS.BTN_USER_START_SERVICE.toString())) {
+                return eventUserHandler.getTypeAugury(update);
+            }
+            else if(callbackData.equals(BUTTONS.BTN_USER_PAY.toString())) {
+                return eventUserHandler.pay(update);
+            }
+            else if(callbackData.equals(BUTTONS.BTN_BACK_TO_START.toString())) {
+                return eventUserHandler.backToStart(update);
+            }
+
             STATE_BOT state = stateDao.getState(update.getCallbackQuery().getMessage().getChatId());
             if(state.equals(STATE_BOT.USER_SERVICE_LIST)){
                 return eventUserHandler.getServiceDetails(update);
+            }
+            else if(state.equals(STATE_BOT.USER_SELECT_CATEGORY)){
+                return eventUserHandler.selectTypeAugury(update, bot);
             }
             return null;
         }

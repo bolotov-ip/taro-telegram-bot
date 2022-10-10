@@ -12,6 +12,8 @@ public class Service {
 
     Integer countUse;
 
+    Integer maxUse;
+
     Integer countDay;
 
     Long price;
@@ -54,5 +56,13 @@ public class Service {
 
     public void setPrice(Long price) {
         this.price = price;
+    }
+
+    public Integer getMaxUse() {
+        return maxUse;
+    }
+
+    public void setMaxUse(Integer maxUse) {
+        this.maxUse = maxUse;
     }
 }

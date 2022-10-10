@@ -13,9 +13,12 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
+import org.telegram.telegrambots.meta.api.methods.AnswerPreCheckoutQuery;
 import org.telegram.telegrambots.meta.api.methods.send.SendInvoice;
+import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
+import org.telegram.telegrambots.meta.api.objects.payments.SuccessfulPayment;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
 @Component
@@ -47,6 +50,16 @@ public class TelegramBot extends TelegramLongPollingBot {
 
     @Override
     public void onUpdateReceived(Update update) {
+        if(update.hasPreCheckoutQuery()) {
+            AnswerPreCheckoutQuery answerPreCheckoutQuery = new AnswerPreCheckoutQuery(update.getPreCheckoutQuery().getId(), true);
+            try {
+                execute(answerPreCheckoutQuery);
+            } catch (TelegramApiException e) {
+                log.error(e.getMessage());
+                throw new RuntimeException(e);
+            }
+        }
+
         Message msg = update.hasMessage()?update.getMessage():update.hasCallbackQuery()?update.getCallbackQuery().getMessage():null;
         if(msg == null)
             return;
@@ -67,7 +80,7 @@ public class TelegramBot extends TelegramLongPollingBot {
             else if(answer.hasDocument())
                 execute(answer.getDocument());
         } catch (TelegramApiException e) {
-            log.error("Error occured: " + e.getMessage());
+            log.error(e.getMessage());
         }
     }
 }

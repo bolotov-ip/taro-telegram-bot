@@ -45,4 +45,15 @@ public class UserDao {
             return optUser.get();
         return null;
     }
+
+    public User getUser(Long chatId) {
+        Optional<User> optUser = userRepository.findById(chatId);
+        if(optUser.isPresent())
+            return optUser.get();
+        return null;
+    }
+
+    public void saveUser(User user) {
+        userRepository.save(user);
+    }
 }

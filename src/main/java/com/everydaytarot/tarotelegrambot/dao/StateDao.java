@@ -34,4 +34,46 @@ public class StateDao {
         else
             return STATE_BOT.ADMIN_START;
     }
+
+    public void setSelectAugury(String augury, Long chatId) {
+        Optional<StateBotUser> oldAugury = stateBotUserRepository.findById(chatId);
+        if(oldAugury.isPresent()){
+            oldAugury.get().setSelectAugury(augury);
+            stateBotUserRepository.save(oldAugury.get());
+        }
+        else{
+            StateBotUser newState = StateBotUser.createStateBot(chatId, STATE_BOT.USER_START);
+            newState.setSelectService(augury);
+            stateBotUserRepository.save(newState);
+        }
+    }
+
+    public String getSelectAugury(Long chatId) {
+        Optional<StateBotUser> state = stateBotUserRepository.findById(chatId);
+        if(state.isPresent())
+            return state.get().getSelectAugury();
+        else
+            return "";
+    }
+
+    public void setSelectService(String service, Long chatId) {
+        Optional<StateBotUser> oldAugury = stateBotUserRepository.findById(chatId);
+        if(oldAugury.isPresent()) {
+            oldAugury.get().setSelectService(service);
+            stateBotUserRepository.save(oldAugury.get());
+        }
+        else{
+            StateBotUser newState = StateBotUser.createStateBot(chatId, STATE_BOT.USER_START);
+            newState.setSelectService(service);
+            stateBotUserRepository.save(newState);
+        }
+    }
+
+    public String getSelectService(Long chatId) {
+        Optional<StateBotUser> state = stateBotUserRepository.findById(chatId);
+        if(state.isPresent())
+            return state.get().getSelectService();
+        else
+            return "";
+    }
 }

@@ -30,7 +30,7 @@ public class ExcelParser {
 
     public void parseXlsxService(String path) {
         try {
-            int COUNT_COLUMN = 5;
+            int COUNT_COLUMN = 6;
             int START_ROW = 2;
             List<Service> serviceList = new ArrayList<>();
 
@@ -65,6 +65,8 @@ public class ExcelParser {
                     else if(i==3)
                         service.setCountUse(Integer.valueOf(cellValue));
                     else if(i==4)
+                        service.setMaxUse(Integer.valueOf(cellValue));
+                    else if(i==5)
                         service.setPrice(Long.valueOf(cellValue));
                 }
                 serviceList.add(service);

@@ -1,6 +1,7 @@
 package com.everydaytarot.tarotelegrambot.dao;
 
-import com.everydaytarot.tarotelegrambot.model.augury.AuguryResult;
+import com.everydaytarot.tarotelegrambot.model.augury.Augury;
+import com.everydaytarot.tarotelegrambot.model.augury.AuguryId;
 import com.everydaytarot.tarotelegrambot.model.augury.CardTaro;
 import com.everydaytarot.tarotelegrambot.model.augury.TypeAugury;
 import com.everydaytarot.tarotelegrambot.repository.AuguryResultRepository;
@@ -9,6 +10,9 @@ import com.everydaytarot.tarotelegrambot.repository.TypeAuguryRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Optional;
 
 @Component
@@ -36,17 +40,16 @@ public class AuguryResultDao {
     }
 
     public void saveAuguryResult(String card, String augury, String result) {
-        Optional<AuguryResult> auguryResult =  auguryResultRepository.findById(augury+card);
-        AuguryResult newAuguryResult;
+        AuguryId auguryId = new AuguryId(card, augury);
+        Optional<Augury> auguryResult =  auguryResultRepository.findById(auguryId);
+        Augury newAugury;
         if(auguryResult.isEmpty())
-            newAuguryResult = new AuguryResult();
+            newAugury = new Augury();
         else
-            newAuguryResult = auguryResult.get();
-        newAuguryResult.setIdAuguryWithCard(augury+card);
-        newAuguryResult.setAugury(augury);
-        newAuguryResult.setNameCard(card);
-        newAuguryResult.setResult(result);
-        auguryResultRepository.save(newAuguryResult);
+            newAugury = auguryResult.get();
+        newAugury.setAuguryId(auguryId);
+        newAugury.setAuguryText(result);
+        auguryResultRepository.save(newAugury);
     }
 
     public void saveCard(String card) {
@@ -60,9 +63,38 @@ public class AuguryResultDao {
         cardTaroRepository.save(newCardTaro);
     }
 
+    public List<String> getCardNames(){
+        List<String> cardNames = new ArrayList<>();
+        Iterable<CardTaro> iterable = cardTaroRepository.findAll();
+        Iterator<CardTaro> iterator = iterable.iterator();
+        while(iterator.hasNext()) {
+            cardNames.add(iterator.next().getNameCard());
+        }
+        return cardNames;
+    }
+
     public void clearAuguryTables() {
         auguryResultRepository.deleteAll();
         cardTaroRepository.deleteAll();
         typeAuguryRepository.deleteAll();
+    }
+
+    public String getAugury(String cardName, String category) {
+        AuguryId auguryId = new AuguryId(cardName, category);
+        Optional<Augury> result = auguryResultRepository.findById(auguryId);
+        if(result.isPresent())
+            return result.get().getAuguryText();
+        else
+            return "";
+    }
+
+    public List<String> getAllCategory() {
+        List<String> result = new ArrayList<>();
+        Iterable<TypeAugury> iterable = typeAuguryRepository.findAll();
+        Iterator<TypeAugury> iterator = iterable.iterator();
+        while(iterator.hasNext()){
+            result.add(iterator.next().getAugury());
+        }
+        return result;
     }
 }
