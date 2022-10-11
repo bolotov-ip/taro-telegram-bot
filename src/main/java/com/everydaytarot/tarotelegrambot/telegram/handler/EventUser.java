@@ -2,8 +2,7 @@ package com.everydaytarot.tarotelegrambot.telegram.handler;
 
 import com.everydaytarot.tarotelegrambot.dao.UserDao;
 import com.everydaytarot.tarotelegrambot.model.service.Service;
-import com.everydaytarot.tarotelegrambot.model.user.User;
-import com.everydaytarot.tarotelegrambot.service.card_day.CardDayService;
+import com.everydaytarot.tarotelegrambot.business.CartomancyManager;
 import com.everydaytarot.tarotelegrambot.telegram.TelegramBot;
 import com.everydaytarot.tarotelegrambot.telegram.constant.BUTTONS;
 import com.everydaytarot.tarotelegrambot.telegram.constant.STATE_BOT;
@@ -11,23 +10,20 @@ import com.everydaytarot.tarotelegrambot.telegram.domain.AnswerBot;
 import com.everydaytarot.tarotelegrambot.telegram.domain.CallbackButton;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.telegram.telegrambots.meta.api.methods.AnswerPreCheckoutQuery;
 import org.telegram.telegrambots.meta.api.methods.send.SendInvoice;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.payments.LabeledPrice;
-import org.telegram.telegrambots.meta.api.objects.payments.PreCheckoutQuery;
-import org.telegram.telegrambots.meta.api.objects.payments.SuccessfulPayment;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @Component
-public class EventUserHandler extends EventHandler{
+public class EventUser extends Event {
 
     @Autowired
-    CardDayService cardDayService;
+    CartomancyManager cartomancyManager;
 
     @Autowired
     UserDao userDao;
@@ -41,7 +37,7 @@ public class EventUserHandler extends EventHandler{
 
     public AnswerBot getListService(Update update) {
         List<CallbackButton> listBtn = new ArrayList<>();
-        List<String> listNamesService = cardDayService.getListServiceName();
+        List<String> listNamesService = cartomancyManager.getListServiceName();
         for(String nameService : listNamesService)
             listBtn.add(new CallbackButton(nameService));
         listBtn.add(new CallbackButton(BUTTONS.BTN_BACK));
@@ -51,7 +47,7 @@ public class EventUserHandler extends EventHandler{
     public AnswerBot getServiceDetails(Update update) {
         String callbackData = update.getCallbackQuery().getData();
         stateDao.setSelectService(callbackData, update.getCallbackQuery().getMessage().getChatId());
-        Service service = cardDayService.getService(callbackData);
+        Service service = cartomancyManager.getService(callbackData);
         String description = service.getDescription();
         List<CallbackButton> listBtn = new ArrayList<>();
         listBtn.add(new CallbackButton(BUTTONS.BTN_BACK));
@@ -63,7 +59,7 @@ public class EventUserHandler extends EventHandler{
 
     public AnswerBot getTypeAugury(Update update) {
         String callbackData = update.getCallbackQuery().getData();
-        List<String> listTypeAugury = cardDayService.getTypesAugury();
+        List<String> listTypeAugury = cartomancyManager.getTypesAugury();
         List<CallbackButton> listBtn = new ArrayList<>();
         for(String type : listTypeAugury) {
             listBtn.add(new CallbackButton(type));
@@ -77,7 +73,7 @@ public class EventUserHandler extends EventHandler{
         String callbackData = update.getCallbackQuery().getData();
         Long chatId = update.getCallbackQuery().getMessage().getChatId();
         stateDao.setSelectAugury(callbackData, chatId);
-        Service service = cardDayService.getService(stateDao.getSelectService(chatId));
+        Service service = cartomancyManager.getService(stateDao.getSelectService(chatId));
         if(service.getPrice()>0) {
             List<CallbackButton> listBtn = new ArrayList<>();
             listBtn.add(new CallbackButton(BUTTONS.BTN_BACK));
@@ -89,7 +85,7 @@ public class EventUserHandler extends EventHandler{
             List<CallbackButton> listBtn = new ArrayList<>();
             listBtn.add(new CallbackButton(BUTTONS.BTN_BACK));
             AnswerBot answer = setAnswer(update, STATE_BOT.USER_FINISH, listBtn , 1);
-            cardDayService.startService(String.valueOf(chatId), service.getName(), bot);
+            cartomancyManager.startService(String.valueOf(chatId), service.getName(), bot);
             return answer;
         }
     }

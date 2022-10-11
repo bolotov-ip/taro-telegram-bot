@@ -1,10 +1,10 @@
-package com.everydaytarot.tarotelegrambot.service.card_day;
+package com.everydaytarot.tarotelegrambot.business;
 
 import com.everydaytarot.tarotelegrambot.dao.*;
 import com.everydaytarot.tarotelegrambot.model.service.Order;
 import com.everydaytarot.tarotelegrambot.model.service.OrderId;
 import com.everydaytarot.tarotelegrambot.model.service.Service;
-import com.everydaytarot.tarotelegrambot.service.image.ImageManager;
+import com.everydaytarot.tarotelegrambot.service.ImageManager;
 import com.everydaytarot.tarotelegrambot.telegram.TelegramBot;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,7 +22,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Component
-public class CardDayService {
+public class CartomancyManager {
 
     public enum CHECKED_STATE{
         COUNT_USE_FAILED, ALL_USE_FAILED, END_DATE_FAILED, ACTIVE;
@@ -80,7 +80,7 @@ public class CardDayService {
     @Autowired
     ImageManager imageManager;
 
-    private final Logger log = LoggerFactory.getLogger(CardDayService.class);
+    private final Logger log = LoggerFactory.getLogger(CartomancyManager.class);
 
     public List<String> getTypesAugury() {
         return auguryResultDao.getAllCategory();

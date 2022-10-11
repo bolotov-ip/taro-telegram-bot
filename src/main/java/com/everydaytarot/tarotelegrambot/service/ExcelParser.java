@@ -1,4 +1,4 @@
-package com.everydaytarot.tarotelegrambot.service.excel;
+package com.everydaytarot.tarotelegrambot.service;
 
 import com.everydaytarot.tarotelegrambot.dao.AuguryResultDao;
 import com.everydaytarot.tarotelegrambot.dao.ServiceDao;

@@ -10,14 +10,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.telegram.telegrambots.meta.api.methods.AnswerPreCheckoutQuery;
 import org.telegram.telegrambots.meta.api.objects.Update;
 
 @Component
 public class UserHandler implements Handler{
 
     @Autowired
-    private EventUserHandler eventUserHandler;
+    private EventUser eventUser;
 
     @Autowired
     private StateDao stateDao;
@@ -39,17 +38,17 @@ public class UserHandler implements Handler{
     @Override
     public AnswerBot run() {
         if(update.hasMessage() && update.getMessage().hasSuccessfulPayment()) {
-            return eventUserHandler.createOrder(update);
+            return eventUser.createOrder(update);
         }
         else if (update.hasMessage() && update.getMessage().hasText()) {
 
             String textMessage = update.getMessage().getText();
 
             if(textMessage.equals(COMMANDS.COMMAND_START.getText())) {
-                return eventUserHandler.start(update);
+                return eventUser.start(update);
             }
             else {
-                return eventUserHandler.commandNotSupport(update);
+                return eventUser.commandNotSupport(update);
             }
 
         }
@@ -57,32 +56,32 @@ public class UserHandler implements Handler{
             String callbackData = update.getCallbackQuery().getData();
 
             if(callbackData.equals(BUTTONS.BTN_USER_MENU_SERVICE.toString())) {
-                return eventUserHandler.getListService(update);
+                return eventUser.getListService(update);
             }
             else if(callbackData.equals(BUTTONS.BTN_BACK.toString())) {
-                return eventUserHandler.back(update);
+                return eventUser.back(update);
             }
             else if(callbackData.equals(BUTTONS.BTN_USER_START_SERVICE.toString())) {
-                return eventUserHandler.getTypeAugury(update);
+                return eventUser.getTypeAugury(update);
             }
             else if(callbackData.equals(BUTTONS.BTN_USER_PAY.toString())) {
-                return eventUserHandler.pay(update);
+                return eventUser.pay(update);
             }
             else if(callbackData.equals(BUTTONS.BTN_BACK_TO_START.toString())) {
-                return eventUserHandler.backToStart(update);
+                return eventUser.backToStart(update);
             }
 
             STATE_BOT state = stateDao.getState(update.getCallbackQuery().getMessage().getChatId());
             if(state.equals(STATE_BOT.USER_SERVICE_LIST)){
-                return eventUserHandler.getServiceDetails(update);
+                return eventUser.getServiceDetails(update);
             }
             else if(state.equals(STATE_BOT.USER_SELECT_CATEGORY)){
-                return eventUserHandler.selectTypeAugury(update, bot);
+                return eventUser.selectTypeAugury(update, bot);
             }
             return null;
         }
         else {
-            return eventUserHandler.commandNotSupport(update);
+            return eventUser.commandNotSupport(update);
         }
     }
 }

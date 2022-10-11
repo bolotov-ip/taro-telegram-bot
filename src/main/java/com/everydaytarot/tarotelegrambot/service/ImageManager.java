@@ -1,4 +1,4 @@
-package com.everydaytarot.tarotelegrambot.service.image;
+package com.everydaytarot.tarotelegrambot.service;
 
 import com.everydaytarot.tarotelegrambot.config.BotConfig;
 import org.springframework.beans.factory.annotation.Autowired;

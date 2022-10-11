@@ -2,8 +2,7 @@ package com.everydaytarot.tarotelegrambot.telegram.handler;
 
 import com.everydaytarot.tarotelegrambot.dao.AuguryResultDao;
 import com.everydaytarot.tarotelegrambot.dao.ServiceDao;
-import com.everydaytarot.tarotelegrambot.service.excel.ExcelParser;
-import com.everydaytarot.tarotelegrambot.telegram.TelegramBot;
+import com.everydaytarot.tarotelegrambot.service.ExcelParser;
 import com.everydaytarot.tarotelegrambot.telegram.constant.BUTTONS;
 import com.everydaytarot.tarotelegrambot.telegram.domain.AnswerBot;
 import com.everydaytarot.tarotelegrambot.telegram.constant.STATE_BOT;
@@ -26,7 +25,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Component
-public class EventAdminHandler extends EventHandler{
+public class EventAdmin extends Event {
 
     @Autowired
     AuguryResultDao auguryResultDao;
@@ -37,7 +36,7 @@ public class EventAdminHandler extends EventHandler{
     @Autowired
     ExcelParser excelParser;
 
-    private final Logger log = LoggerFactory.getLogger(EventAdminHandler.class);
+    private final Logger log = LoggerFactory.getLogger(EventAdmin.class);
 
     public AnswerBot start(Update update) {
         List<CallbackButton> listBtn = new ArrayList<>();
