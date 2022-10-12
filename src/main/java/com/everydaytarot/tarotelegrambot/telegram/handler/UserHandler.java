@@ -1,6 +1,6 @@
 package com.everydaytarot.tarotelegrambot.telegram.handler;
 
-import com.everydaytarot.tarotelegrambot.service.StateManager;
+import com.everydaytarot.tarotelegrambot.dao.StateDao;
 import com.everydaytarot.tarotelegrambot.telegram.TelegramBot;
 import com.everydaytarot.tarotelegrambot.telegram.constant.BUTTONS;
 import com.everydaytarot.tarotelegrambot.telegram.constant.COMMANDS;
@@ -20,7 +20,7 @@ public class UserHandler implements Handler{
     private EventUser eventUser;
 
     @Autowired
-    private StateManager stateManager;
+    private StateDao stateDao;
 
     private final Logger log = LoggerFactory.getLogger(TelegramBot.class);
 
@@ -72,7 +72,7 @@ public class UserHandler implements Handler{
                 return eventUser.backToStart(update);
             }
 
-            STATE_BOT state = stateManager.getState(update.getCallbackQuery().getMessage().getChatId());
+            STATE_BOT state = stateDao.getState(update.getCallbackQuery().getMessage().getChatId());
             if(state.equals(STATE_BOT.USER_SERVICE_LIST)){
                 return eventUser.getServiceDetails(update);
             }

@@ -6,16 +6,16 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 
 @Entity(name = "state_bot")
-public class StateBotUser {
+public class StateBot {
 
-    public static StateBotUser createStateBot(Long chatId, STATE_BOT state) {
-        StateBotUser stateBotUser = new StateBotUser();
-        stateBotUser.setChatId(chatId);
-        stateBotUser.setStateBot(state.toString());
-        stateBotUser.setSelectAugury("");
-        stateBotUser.setSelectService(0L);
-        stateBotUser.setSelectShirt("");
-        return stateBotUser;
+    public static StateBot createStateBot(Long chatId, STATE_BOT state) {
+        StateBot stateBot = new StateBot();
+        stateBot.setChatId(chatId);
+        stateBot.setStateBot(state.toString());
+        stateBot.setSelectAugury("");
+        stateBot.setSelectService(0L);
+        stateBot.setSelectShirt("");
+        return stateBot;
     }
 
     @Id

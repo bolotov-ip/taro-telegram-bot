@@ -55,7 +55,7 @@ public class EventUser extends Event {
     public AnswerBot getServiceDetails(Update update) {
         String callbackData = update.getCallbackQuery().getData();
         Long chatId = update.getCallbackQuery().getMessage().getChatId();
-        stateManager.setSelectService(Long.valueOf(callbackData), chatId);
+        stateDao.setSelectService(Long.valueOf(callbackData), chatId);
         Service service = serviceManager.getService(chatId);
         String description = service.getDescription();
         List<CallbackButton> listBtn = new ArrayList<>();
@@ -81,8 +81,8 @@ public class EventUser extends Event {
     public AnswerBot selectTypeAugury(Update update, TelegramBot bot) {
         String callbackData = update.getCallbackQuery().getData();
         Long chatId = update.getCallbackQuery().getMessage().getChatId();
-        stateManager.setSelectAugury(callbackData, chatId);
-        Service service = serviceManager.getService(stateManager.getSelectService(chatId));
+        stateDao.setSelectAugury(callbackData, chatId);
+        Service service = serviceManager.getService(stateDao.getSelectService(chatId));
         if(service.getPrice()>0) {
             List<CallbackButton> listBtn = new ArrayList<>();
             listBtn.add(new CallbackButton(BUTTONS.BTN_BACK));
@@ -94,7 +94,7 @@ public class EventUser extends Event {
             List<CallbackButton> listBtn = new ArrayList<>();
             listBtn.add(new CallbackButton(BUTTONS.BTN_BACK));
             AnswerBot answer = setAnswer(update, STATE_BOT.USER_FINISH, listBtn , 1);
-            cartomancyManager.startService(String.valueOf(chatId), service.getName(), bot);
+            cartomancyManager.startService(chatId, service.getId(), bot);
             return answer;
         }
     }
@@ -126,7 +126,7 @@ public class EventUser extends Event {
 
     public AnswerBot back(Update update) {
         Message msg = update.getCallbackQuery().getMessage();
-        STATE_BOT state = stateManager.getState(msg.getChatId());
+        STATE_BOT state = stateDao.getState(msg.getChatId());
         if(state.equals(STATE_BOT.USER_SERVICE_LIST))
             return start(update);
         else if(state.equals(STATE_BOT.USER_SERVICE_DETAILS))

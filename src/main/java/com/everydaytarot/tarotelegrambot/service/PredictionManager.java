@@ -72,13 +72,13 @@ public class PredictionManager {
 
             Sheet sheet = workbook.getSheetAt(0);
 
-            String augury = "";
+            String category = "";
             String card = "";
             for (Row row : sheet) {
                 String cellValue = row.getCell(0)!=null&&row.getCell(0).getCellType().equals(CellType.STRING)?row.getCell(0).getStringCellValue():"";
 
                 if(cellValue!=null && !cellValue.isEmpty()) {
-                    augury = row.getCell(0).getStringCellValue();
+                    category = row.getCell(0).getStringCellValue();
                 }
 
                 cellValue = row.getCell(1)!=null&&row.getCell(1).getCellType().equals(CellType.STRING)?row.getCell(1).getStringCellValue():"";
@@ -87,10 +87,10 @@ public class PredictionManager {
                     card = row.getCell(1).getStringCellValue();
                 }
 
-                String result = row.getCell(1)!=null&&row.getCell(2).getCellType().equals(CellType.STRING)?row.getCell(2).getStringCellValue():"";
-                if(card == null || card.equals("") || augury == null || augury.equals("") ||result == null || result.equals(""))
+                String text = row.getCell(1)!=null&&row.getCell(2).getCellType().equals(CellType.STRING)?row.getCell(2).getStringCellValue():"";
+                if(card == null || card.equals("") || category == null || category.equals("") ||text == null || text.equals(""))
                     continue;
-                this.savePrediction(card, augury, result);
+                this.savePrediction(card, category, text);
             }
         }
         catch (Exception e) {

@@ -46,8 +46,6 @@ public class ServiceManager {
                 indexRow++;
                 if(indexRow < START_ROW)
                     continue;
-
-
                 Service service = new Service();
                 for(int i=0; i<COUNT_COLUMN; i++) {
                     String cellValue = "";
@@ -73,12 +71,19 @@ public class ServiceManager {
                 }
                 serviceList.add(service);
             }
-            for(Service service : serviceList) {
-                serviceDao.save(service);
-            }
+            deactivationActiveService();
+            serviceDao.saveAllAndFlush(serviceList);
         }
         catch (Exception e) {
             log.error("ExcelParce error: " + e.getMessage());
         }
+    }
+
+    private void deactivationActiveService() {
+        List<Service> services = getActiveServices();
+        for(Service service : services) {
+            service.setState(Service.State.NONACTIVE.toString());
+        }
+        serviceDao.saveAllAndFlush(services);
     }
 }

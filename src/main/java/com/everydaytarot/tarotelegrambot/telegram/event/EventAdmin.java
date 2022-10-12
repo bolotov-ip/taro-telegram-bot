@@ -102,7 +102,7 @@ public class EventAdmin extends Event {
 
     public AnswerBot pressBack(Update update) {
         Message msg = update.getCallbackQuery().getMessage();
-        STATE_BOT state = stateManager.getState(msg.getChatId());
+        STATE_BOT state = stateDao.getState(msg.getChatId());
         if(state.equals(STATE_BOT.ADMIN_MENU))
             return start(update);
         else if(state.equals(STATE_BOT.INPUT_XLSX_AUGURY) || state.equals(STATE_BOT.INPUT_XLSX_SERVICE) ||  state.equals(STATE_BOT.INPUT_CARD))
