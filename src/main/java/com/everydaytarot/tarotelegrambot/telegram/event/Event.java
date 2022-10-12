@@ -1,7 +1,7 @@
 package com.everydaytarot.tarotelegrambot.telegram.event;
 
 import com.everydaytarot.tarotelegrambot.config.BotConfig;
-import com.everydaytarot.tarotelegrambot.business.StateManager;
+import com.everydaytarot.tarotelegrambot.service.StateManager;
 import com.everydaytarot.tarotelegrambot.telegram.TelegramBot;
 import com.everydaytarot.tarotelegrambot.telegram.constant.STATE_BOT;
 import com.everydaytarot.tarotelegrambot.telegram.domain.AnswerBot;

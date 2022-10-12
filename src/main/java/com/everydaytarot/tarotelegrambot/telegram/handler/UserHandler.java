@@ -1,6 +1,6 @@
 package com.everydaytarot.tarotelegrambot.telegram.handler;
 
-import com.everydaytarot.tarotelegrambot.business.StateManager;
+import com.everydaytarot.tarotelegrambot.service.StateManager;
 import com.everydaytarot.tarotelegrambot.telegram.TelegramBot;
 import com.everydaytarot.tarotelegrambot.telegram.constant.BUTTONS;
 import com.everydaytarot.tarotelegrambot.telegram.constant.COMMANDS;
@@ -63,7 +63,7 @@ public class UserHandler implements Handler{
                 return eventUser.back(update);
             }
             else if(callbackData.equals(BUTTONS.BTN_USER_START_SERVICE.toString())) {
-                return eventUser.getTypeAugury(update);
+                return eventUser.getCategoryPrediction(update);
             }
             else if(callbackData.equals(BUTTONS.BTN_USER_PAY.toString())) {
                 return eventUser.pay(update);

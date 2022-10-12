@@ -13,7 +13,7 @@ public class StateBotUser {
         stateBotUser.setChatId(chatId);
         stateBotUser.setStateBot(state.toString());
         stateBotUser.setSelectAugury("");
-        stateBotUser.setSelectService("");
+        stateBotUser.setSelectService(0L);
         stateBotUser.setSelectShirt("");
         return stateBotUser;
     }

@@ -1,22 +1,16 @@
-package com.everydaytarot.tarotelegrambot.business;
+package com.everydaytarot.tarotelegrambot.service;
 
 import com.everydaytarot.tarotelegrambot.model.Order;
-import com.everydaytarot.tarotelegrambot.model.Service;
-import com.everydaytarot.tarotelegrambot.service.ImageManager;
 import com.everydaytarot.tarotelegrambot.telegram.TelegramBot;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.methods.send.SendPhoto;
 import org.telegram.telegrambots.meta.api.objects.InputFile;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
 import java.io.File;
-import java.sql.Date;
-import java.sql.Timestamp;
-import java.util.ArrayList;
 import java.util.List;
 
 @Component
@@ -35,13 +29,13 @@ public class CartomancyManager {
         public TarotAnswer(Order order, String cardName) {
             this.cardName = cardName;
             this.shirt = getShirt(order);
-            this.image = imageManager.getFileImageCard(cardName, shirt);
+            this.image = null;
             this.description = getDescription(order);
         }
 
         public String getShirt(Order order) {
             String shirtUser = stateManager.getShirt(order.getChatId());
-            List<String> shirts = imageManager.getAllCardShirt();
+            List<String> shirts = null;
             if(shirts.contains(shirtUser))
                 return shirtUser;
             else if(shirts.size()>0)
@@ -75,27 +69,11 @@ public class CartomancyManager {
     @Autowired
     StateManager stateManager;
 
-    @Autowired
-    ImageManager imageManager;
 
     private final Logger log = LoggerFactory.getLogger(CartomancyManager.class);
 
     public List<String> getTypesAugury() {
         return predictionManager.getAllCategory();
-    }
-
-    public List<String> getListServiceName() {
-        List<String> listServiceName = new ArrayList<>();
-        List<Service> listService = serviceManager.getAllService();
-        for(Service service : listService) {
-            listServiceName.add(service.getName());
-        }
-        return listServiceName;
-    }
-
-    public Service getService(Long id) {
-
-        return serviceManager.getService(id);
     }
 
     public void startService(String chatId, String serviceName, TelegramBot bot) {
@@ -162,7 +140,5 @@ public class CartomancyManager {
         sendPhoto.setPhoto(inputFile);
         bot.execute(sendPhoto);
     }
-
-
 
 }

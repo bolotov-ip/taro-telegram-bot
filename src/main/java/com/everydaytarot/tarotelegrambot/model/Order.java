@@ -9,7 +9,7 @@ import java.sql.Timestamp;
 @Entity(name = "orders")
 public class Order {
 
-    public static enum StateOrder {ACTIVE, COMPLETE}
+    public enum StateOrder {ACTIVE, COMPLETE}
 
     public static Order createOrder(ResultSet rs) throws SQLException {
         Order order = new Order();
@@ -21,7 +21,7 @@ public class Order {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(columnDefinition = "serial", name = "id")
+    @Column(name = "id")
     Long id;
 
     @Column(name = "chat_id")

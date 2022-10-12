@@ -7,7 +7,7 @@ public class Prediction {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(columnDefinition = "serial", name = "id")
+    @Column(name = "id")
     Long id;
 
     @Column(nullable = false, name = "card")

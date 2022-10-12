@@ -1,10 +1,7 @@
 package com.everydaytarot.tarotelegrambot.service;
 
-import com.everydaytarot.tarotelegrambot.business.PredictionManager;
-import com.everydaytarot.tarotelegrambot.business.ServiceManager;
-import com.everydaytarot.tarotelegrambot.exception.ParseXlsxException;
+import com.everydaytarot.tarotelegrambot.dao.ServiceDao;
 import com.everydaytarot.tarotelegrambot.model.Service;
-import com.everydaytarot.tarotelegrambot.telegram.TelegramBot;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.slf4j.Logger;
@@ -14,21 +11,26 @@ import org.springframework.stereotype.Component;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 @Component
-public class ExcelParser {
+public class ServiceManager {
 
     @Autowired
-    PredictionManager predictionManager;
+    ServiceDao serviceDao;
 
-    @Autowired
-    ServiceManager serviceManager;
+    private final Logger log = LoggerFactory.getLogger(ServiceManager.class);
 
-    private final Logger log = LoggerFactory.getLogger(TelegramBot.class);
+    public Service getService(Long id) {
+        Optional<Service> service = serviceDao.findById(id);
+        return service.isPresent()?service.get():null;
+    }
 
-    public void parseXlsxService(String path) {
+    public List<Service> getActiveServices() {
+        return serviceDao.getActiveServices();
+    }
+
+    public void parseFileExcel(String path) {
         try {
             int COUNT_COLUMN = 6;
             int START_ROW = 2;
@@ -72,46 +74,11 @@ public class ExcelParser {
                 serviceList.add(service);
             }
             for(Service service : serviceList) {
-                serviceManager.addService(service);
+                serviceDao.save(service);
             }
         }
         catch (Exception e) {
             log.error("ExcelParce error: " + e.getMessage());
         }
     }
-
-    public void parserPredictionXlsx(String path){
-        try {
-            FileInputStream file = new FileInputStream(new File(path));
-            Workbook workbook = new XSSFWorkbook(file);
-
-            Sheet sheet = workbook.getSheetAt(0);
-
-            String augury = "";
-            String card = "";
-            for (Row row : sheet) {
-                String cellValue = row.getCell(0)!=null&&row.getCell(0).getCellType().equals(CellType.STRING)?row.getCell(0).getStringCellValue():"";
-
-                if(cellValue!=null && !cellValue.isEmpty()) {
-                    augury = row.getCell(0).getStringCellValue();
-                }
-
-                cellValue = row.getCell(1)!=null&&row.getCell(1).getCellType().equals(CellType.STRING)?row.getCell(1).getStringCellValue():"";
-
-                if(cellValue!=null && !cellValue.isEmpty()) {
-                    card = row.getCell(1).getStringCellValue();
-                }
-
-                String result = row.getCell(1)!=null&&row.getCell(2).getCellType().equals(CellType.STRING)?row.getCell(2).getStringCellValue():"";
-                if(card == null || card.equals("") || augury == null || augury.equals("") ||result == null || result.equals(""))
-                    throw new ParseXlsxException();
-                predictionManager.saveAuguryResult(card, augury, result);
-            }
-        }
-        catch (Exception e) {
-            log.error("ExcelParce error: " + e.getMessage());
-        }
-
-    }
-
 }

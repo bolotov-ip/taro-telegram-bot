@@ -1,4 +1,4 @@
-package com.everydaytarot.tarotelegrambot.business;
+package com.everydaytarot.tarotelegrambot.service;
 
 import com.everydaytarot.tarotelegrambot.config.BotConfig;
 import com.everydaytarot.tarotelegrambot.dao.UserDao;

@@ -1,9 +1,8 @@
 package com.everydaytarot.tarotelegrambot.telegram;
 
-import com.everydaytarot.tarotelegrambot.business.UserManager;
+import com.everydaytarot.tarotelegrambot.service.UserManager;
 import com.everydaytarot.tarotelegrambot.config.BotConfig;
 import com.everydaytarot.tarotelegrambot.dao.PredictionDao;
-import com.everydaytarot.tarotelegrambot.model.Prediction;
 import com.everydaytarot.tarotelegrambot.telegram.domain.AnswerBot;
 import com.everydaytarot.tarotelegrambot.model.User;
 import com.everydaytarot.tarotelegrambot.telegram.handler.AdminHandler;
@@ -51,12 +50,6 @@ public class TelegramBot extends TelegramLongPollingBot {
 
     @Override
     public void onUpdateReceived(Update update) {
-        Prediction prediction = new Prediction();
-        prediction.setCard("card1");
-        prediction.setCategory("category1");
-        prediction.setText("text1");
-
-        predictionDao.save(prediction);
 
         if(update.hasPreCheckoutQuery()) {
             AnswerPreCheckoutQuery answerPreCheckoutQuery = new AnswerPreCheckoutQuery(update.getPreCheckoutQuery().getId(), true);

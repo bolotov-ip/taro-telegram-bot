@@ -1,8 +1,7 @@
 package com.everydaytarot.tarotelegrambot.telegram.event;
 
-import com.everydaytarot.tarotelegrambot.business.PredictionManager;
-import com.everydaytarot.tarotelegrambot.business.ServiceManager;
-import com.everydaytarot.tarotelegrambot.service.ExcelParser;
+import com.everydaytarot.tarotelegrambot.service.PredictionManager;
+import com.everydaytarot.tarotelegrambot.service.ServiceManager;
 import com.everydaytarot.tarotelegrambot.telegram.constant.BUTTONS;
 import com.everydaytarot.tarotelegrambot.telegram.domain.AnswerBot;
 import com.everydaytarot.tarotelegrambot.telegram.constant.STATE_BOT;
@@ -32,9 +31,6 @@ public class EventAdmin extends Event {
 
     @Autowired
     ServiceManager serviceManager;
-
-    @Autowired
-    ExcelParser excelParser;
 
     private final Logger log = LoggerFactory.getLogger(EventAdmin.class);
 
@@ -140,11 +136,9 @@ public class EventAdmin extends Event {
                 @Override
                 public void run() {
                     if(state.equals(STATE_BOT.INPUT_XLSX_AUGURY)) {
-                        predictionManager.clearAuguryTables();
-                        excelParser.parserPredictionXlsx(path);
+                        predictionManager.parseFileExcel(path);
                     } else if (state.equals(STATE_BOT.INPUT_XLSX_SERVICE)) {
-                        serviceManager.removeAllService();
-                        excelParser.parseXlsxService(path);
+                        serviceManager.parseFileExcel(path);
                     }
 
                 }

@@ -1,4 +1,4 @@
-package com.everydaytarot.tarotelegrambot.business;
+package com.everydaytarot.tarotelegrambot.service;
 
 import com.everydaytarot.tarotelegrambot.dao.OrderDao;
 import com.everydaytarot.tarotelegrambot.model.Order;
@@ -14,7 +14,6 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Optional;
 
 @Component
 public class OrderManager {

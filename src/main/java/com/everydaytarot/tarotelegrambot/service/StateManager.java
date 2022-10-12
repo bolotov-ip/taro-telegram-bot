@@ -1,4 +1,4 @@
-package com.everydaytarot.tarotelegrambot.business;
+package com.everydaytarot.tarotelegrambot.service;
 
 import com.everydaytarot.tarotelegrambot.dao.StateDao;
 import com.everydaytarot.tarotelegrambot.model.StateBotUser;
@@ -51,7 +51,7 @@ public class StateManager {
         }
         else{
             StateBotUser newState = StateBotUser.createStateBot(chatId, STATE_BOT.USER_START);
-            newState.setSelectService(augury);
+            newState.setSelectAugury(augury);
             stateDao.save(newState);
         }
     }
@@ -82,6 +82,6 @@ public class StateManager {
         if(state.isPresent())
             return state.get().getSelectService();
         else
-            return 0;
+            return 0L;
     }
 }

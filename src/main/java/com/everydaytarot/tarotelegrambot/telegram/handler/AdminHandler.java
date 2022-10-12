@@ -1,6 +1,6 @@
 package com.everydaytarot.tarotelegrambot.telegram.handler;
 
-import com.everydaytarot.tarotelegrambot.business.StateManager;
+import com.everydaytarot.tarotelegrambot.service.StateManager;
 import com.everydaytarot.tarotelegrambot.telegram.TelegramBot;
 import com.everydaytarot.tarotelegrambot.telegram.constant.BUTTONS;
 import com.everydaytarot.tarotelegrambot.telegram.constant.COMMANDS;

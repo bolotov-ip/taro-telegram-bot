@@ -5,9 +5,10 @@ import javax.persistence.*;
 @Entity(name = "service")
 public class Service {
 
+    public enum State {ACTIVE, NONACTIVE}
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(columnDefinition = "serial")
     Long id;
 
     String name;
@@ -22,7 +23,7 @@ public class Service {
 
     Long price;
 
-    String state;
+    String state = State.ACTIVE.toString();
 
     public Long getId() {
         return id;
