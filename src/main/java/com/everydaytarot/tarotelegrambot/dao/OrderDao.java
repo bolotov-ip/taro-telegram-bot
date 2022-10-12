@@ -3,7 +3,6 @@ package com.everydaytarot.tarotelegrambot.dao;
 import com.everydaytarot.tarotelegrambot.model.service.Order;
 import com.everydaytarot.tarotelegrambot.model.service.OrderId;
 import com.everydaytarot.tarotelegrambot.repository.OrderRepository;
-import com.everydaytarot.tarotelegrambot.telegram.handler.EventAdminHandler;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.jdbc.Work;

@@ -1,31 +1,23 @@
 package com.everydaytarot.tarotelegrambot.telegram.handler;
 
 import com.everydaytarot.tarotelegrambot.dao.StateDao;
-import com.everydaytarot.tarotelegrambot.model.service.Order;
 import com.everydaytarot.tarotelegrambot.telegram.TelegramBot;
 import com.everydaytarot.tarotelegrambot.telegram.constant.BUTTONS;
 import com.everydaytarot.tarotelegrambot.telegram.constant.COMMANDS;
 import com.everydaytarot.tarotelegrambot.telegram.constant.STATE_BOT;
 import com.everydaytarot.tarotelegrambot.telegram.domain.AnswerBot;
-import org.hibernate.Session;
-import org.hibernate.SessionFactory;
-import org.hibernate.jdbc.Work;
+import com.everydaytarot.tarotelegrambot.telegram.event.EventAdmin;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.objects.Update;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-
 @Component
 public class AdminHandler implements Handler{
 
     @Autowired
-    private EventAdminHandler eventAdminHandler;
+    private EventAdmin eventAdminHandler;
 
     @Autowired
     private StateDao stateDao;
