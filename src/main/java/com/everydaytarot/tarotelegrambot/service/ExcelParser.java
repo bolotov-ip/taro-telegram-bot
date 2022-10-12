@@ -1,9 +1,9 @@
 package com.everydaytarot.tarotelegrambot.service;
 
-import com.everydaytarot.tarotelegrambot.dao.AuguryResultDao;
-import com.everydaytarot.tarotelegrambot.dao.ServiceDao;
+import com.everydaytarot.tarotelegrambot.business.PredictionManager;
+import com.everydaytarot.tarotelegrambot.business.ServiceManager;
 import com.everydaytarot.tarotelegrambot.exception.ParseXlsxException;
-import com.everydaytarot.tarotelegrambot.model.service.Service;
+import com.everydaytarot.tarotelegrambot.model.Service;
 import com.everydaytarot.tarotelegrambot.telegram.TelegramBot;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
@@ -21,10 +21,10 @@ import java.util.List;
 public class ExcelParser {
 
     @Autowired
-    AuguryResultDao auguryResultDao;
+    PredictionManager predictionManager;
 
     @Autowired
-    ServiceDao serviceDao;
+    ServiceManager serviceManager;
 
     private final Logger log = LoggerFactory.getLogger(TelegramBot.class);
 
@@ -72,7 +72,7 @@ public class ExcelParser {
                 serviceList.add(service);
             }
             for(Service service : serviceList) {
-                serviceDao.addService(service);
+                serviceManager.addService(service);
             }
         }
         catch (Exception e) {
@@ -80,7 +80,7 @@ public class ExcelParser {
         }
     }
 
-    public void parserXlsxAugury(String path){
+    public void parserPredictionXlsx(String path){
         try {
             FileInputStream file = new FileInputStream(new File(path));
             Workbook workbook = new XSSFWorkbook(file);
@@ -94,20 +94,18 @@ public class ExcelParser {
 
                 if(cellValue!=null && !cellValue.isEmpty()) {
                     augury = row.getCell(0).getStringCellValue();
-                    auguryResultDao.saveTypeAugury(augury);
                 }
 
                 cellValue = row.getCell(1)!=null&&row.getCell(1).getCellType().equals(CellType.STRING)?row.getCell(1).getStringCellValue():"";
 
                 if(cellValue!=null && !cellValue.isEmpty()) {
                     card = row.getCell(1).getStringCellValue();
-                    auguryResultDao.saveCard(card);
                 }
 
                 String result = row.getCell(1)!=null&&row.getCell(2).getCellType().equals(CellType.STRING)?row.getCell(2).getStringCellValue():"";
                 if(card == null || card.equals("") || augury == null || augury.equals("") ||result == null || result.equals(""))
                     throw new ParseXlsxException();
-                auguryResultDao.saveAuguryResult(card, augury, result);
+                predictionManager.saveAuguryResult(card, augury, result);
             }
         }
         catch (Exception e) {

@@ -1,4 +1,4 @@
-package com.everydaytarot.tarotelegrambot.model.telegram;
+package com.everydaytarot.tarotelegrambot.model;
 
 import com.everydaytarot.tarotelegrambot.telegram.constant.STATE_BOT;
 
@@ -14,6 +14,7 @@ public class StateBotUser {
         stateBotUser.setStateBot(state.toString());
         stateBotUser.setSelectAugury("");
         stateBotUser.setSelectService("");
+        stateBotUser.setSelectShirt("");
         return stateBotUser;
     }
 
@@ -24,13 +25,23 @@ public class StateBotUser {
 
     String selectAugury;
 
-    String selectService;
+    Long selectService;
 
-    public String getSelectService() {
+    String selectShirt;
+
+    public String getSelectShirt() {
+        return selectShirt;
+    }
+
+    public void setSelectShirt(String selectShirt) {
+        this.selectShirt = selectShirt;
+    }
+
+    public Long getSelectService() {
         return selectService;
     }
 
-    public void setSelectService(String selectService) {
+    public void setSelectService(Long selectService) {
         this.selectService = selectService;
     }
 

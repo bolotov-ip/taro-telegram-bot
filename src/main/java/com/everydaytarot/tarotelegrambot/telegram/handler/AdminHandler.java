@@ -1,11 +1,12 @@
 package com.everydaytarot.tarotelegrambot.telegram.handler;
 
-import com.everydaytarot.tarotelegrambot.dao.StateDao;
+import com.everydaytarot.tarotelegrambot.business.StateManager;
 import com.everydaytarot.tarotelegrambot.telegram.TelegramBot;
 import com.everydaytarot.tarotelegrambot.telegram.constant.BUTTONS;
 import com.everydaytarot.tarotelegrambot.telegram.constant.COMMANDS;
 import com.everydaytarot.tarotelegrambot.telegram.constant.STATE_BOT;
 import com.everydaytarot.tarotelegrambot.telegram.domain.AnswerBot;
+import com.everydaytarot.tarotelegrambot.telegram.event.EventAdmin;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,7 +20,7 @@ public class AdminHandler implements Handler{
     private EventAdmin eventAdmin;
 
     @Autowired
-    private StateDao stateDao;
+    private StateManager stateManager;
 
     private final Logger log = LoggerFactory.getLogger(TelegramBot.class);
 
@@ -77,12 +78,12 @@ public class AdminHandler implements Handler{
                 return eventAdmin.pressLoadAugury(update);
             }
             else if(callbackData.equals(BUTTONS.BTN_ADMIN_DOWNOLAD_FILE.toString())) {
-                STATE_BOT state = stateDao.getState(update.getCallbackQuery().getMessage().getChatId());
+                STATE_BOT state = stateManager.getState(update.getCallbackQuery().getMessage().getChatId());
                 return eventAdmin.pressSendFile(update, state);
             }
         }
         else if(update.getMessage().hasDocument()) {
-            STATE_BOT state = stateDao.getState(update.getMessage().getChatId());
+            STATE_BOT state = stateManager.getState(update.getMessage().getChatId());
             if(state.equals(STATE_BOT.INPUT_XLSX_AUGURY) || state.equals(STATE_BOT.INPUT_XLSX_SERVICE)) {
                 return eventAdmin.getFile(update, state);
             }

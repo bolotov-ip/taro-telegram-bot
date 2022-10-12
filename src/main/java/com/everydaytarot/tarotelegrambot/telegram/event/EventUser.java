@@ -1,7 +1,7 @@
-package com.everydaytarot.tarotelegrambot.telegram.handler;
+package com.everydaytarot.tarotelegrambot.telegram.event;
 
 import com.everydaytarot.tarotelegrambot.dao.UserDao;
-import com.everydaytarot.tarotelegrambot.model.service.Service;
+import com.everydaytarot.tarotelegrambot.model.Service;
 import com.everydaytarot.tarotelegrambot.business.CartomancyManager;
 import com.everydaytarot.tarotelegrambot.telegram.TelegramBot;
 import com.everydaytarot.tarotelegrambot.telegram.constant.BUTTONS;
@@ -46,8 +46,8 @@ public class EventUser extends Event {
 
     public AnswerBot getServiceDetails(Update update) {
         String callbackData = update.getCallbackQuery().getData();
-        stateDao.setSelectService(callbackData, update.getCallbackQuery().getMessage().getChatId());
-        Service service = cartomancyManager.getService(callbackData);
+        stateManager.setSelectService(Long.valueOf(callbackData), update.getCallbackQuery().getMessage().getChatId());
+        Service service = cartomancyManager.getService(update.getCallbackQuery().getMessage().getChatId());
         String description = service.getDescription();
         List<CallbackButton> listBtn = new ArrayList<>();
         listBtn.add(new CallbackButton(BUTTONS.BTN_BACK));
@@ -72,8 +72,8 @@ public class EventUser extends Event {
     public AnswerBot selectTypeAugury(Update update, TelegramBot bot) {
         String callbackData = update.getCallbackQuery().getData();
         Long chatId = update.getCallbackQuery().getMessage().getChatId();
-        stateDao.setSelectAugury(callbackData, chatId);
-        Service service = cartomancyManager.getService(stateDao.getSelectService(chatId));
+        stateManager.setSelectAugury(callbackData, chatId);
+        Service service = cartomancyManager.getService(stateManager.getSelectService(chatId));
         if(service.getPrice()>0) {
             List<CallbackButton> listBtn = new ArrayList<>();
             listBtn.add(new CallbackButton(BUTTONS.BTN_BACK));
@@ -117,7 +117,7 @@ public class EventUser extends Event {
 
     public AnswerBot back(Update update) {
         Message msg = update.getCallbackQuery().getMessage();
-        STATE_BOT state = stateDao.getState(msg.getChatId());
+        STATE_BOT state = stateManager.getState(msg.getChatId());
         if(state.equals(STATE_BOT.USER_SERVICE_LIST))
             return start(update);
         else if(state.equals(STATE_BOT.USER_SERVICE_DETAILS))

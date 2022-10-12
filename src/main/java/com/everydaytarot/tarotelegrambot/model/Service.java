@@ -1,11 +1,15 @@
-package com.everydaytarot.tarotelegrambot.model.service;
+package com.everydaytarot.tarotelegrambot.model;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
+import javax.persistence.*;
 
 @Entity(name = "service")
 public class Service {
+
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(columnDefinition = "serial")
+    Long id;
+
     String name;
 
     String description;
@@ -17,6 +21,24 @@ public class Service {
     Integer countDay;
 
     Long price;
+
+    String state;
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public String getState() {
+        return state;
+    }
+
+    public void setState(String state) {
+        this.state = state;
+    }
 
     public String getName() {
         return name;

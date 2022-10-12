@@ -1,9 +1,7 @@
 package com.everydaytarot.tarotelegrambot.business;
 
-import com.everydaytarot.tarotelegrambot.dao.*;
-import com.everydaytarot.tarotelegrambot.model.service.Order;
-import com.everydaytarot.tarotelegrambot.model.service.OrderId;
-import com.everydaytarot.tarotelegrambot.model.service.Service;
+import com.everydaytarot.tarotelegrambot.model.Order;
+import com.everydaytarot.tarotelegrambot.model.Service;
 import com.everydaytarot.tarotelegrambot.service.ImageManager;
 import com.everydaytarot.tarotelegrambot.telegram.TelegramBot;
 import org.slf4j.Logger;
@@ -42,7 +40,7 @@ public class CartomancyManager {
         }
 
         public String getShirt(Order order) {
-            String shirtUser = userDao.getUser(order.getOrderId().getChatId()).getShirt();
+            String shirtUser = stateManager.getShirt(order.getChatId());
             List<String> shirts = imageManager.getAllCardShirt();
             if(shirts.contains(shirtUser))
                 return shirtUser;
@@ -53,29 +51,29 @@ public class CartomancyManager {
         }
 
         public String getDescription(Order order) {
-            String category = order.getCategory();
-            List<String> allCategory = auguryResultDao.getAllCategory();
+            String category = stateManager.getSelectAugury(order.getChatId());
+            List<String> allCategory = predictionManager.getAllCategory();
             if(!allCategory.contains(category))
                 category = allCategory.get(0);
-            String description = auguryResultDao.getAugury(this.cardName, category);
+            String description = predictionManager.getAugury(this.cardName, category);
             return description;
         }
     }
 
     @Autowired
-    AuguryResultDao auguryResultDao;
+    PredictionManager predictionManager;
 
     @Autowired
-    ServiceDao serviceDao;
+    ServiceManager serviceManager;
 
     @Autowired
-    OrderDao orderDao;
+    OrderManager orderManager;
 
     @Autowired
-    UserDao userDao;
+    UserManager userManager;
 
     @Autowired
-    StateDao stateDao;
+    StateManager stateManager;
 
     @Autowired
     ImageManager imageManager;
@@ -83,30 +81,30 @@ public class CartomancyManager {
     private final Logger log = LoggerFactory.getLogger(CartomancyManager.class);
 
     public List<String> getTypesAugury() {
-        return auguryResultDao.getAllCategory();
+        return predictionManager.getAllCategory();
     }
 
     public List<String> getListServiceName() {
         List<String> listServiceName = new ArrayList<>();
-        List<Service> listService = serviceDao.getAllService();
+        List<Service> listService = serviceManager.getAllService();
         for(Service service : listService) {
             listServiceName.add(service.getName());
         }
         return listServiceName;
     }
 
-    public Service getService(String serviceName) {
+    public Service getService(Long id) {
 
-        return serviceDao.getService(serviceName);
+        return serviceManager.getService(id);
     }
 
     public void startService(String chatId, String serviceName, TelegramBot bot) {
         Thread thread = new Thread(new Runnable() {
             @Override
-            public void run() {
+            public void run() {/*
                 try {
                     OrderId orderId = new OrderId(Long.valueOf(chatId), serviceName);
-                    Order findOrder = orderDao.findOrder(orderId);
+                    Order findOrder = orderManager.findOrder(orderId);
                     if(findOrder == null) {
                         Order newOrder = createOrder(chatId, serviceName);
                         startAutoService(newOrder, bot);
@@ -137,14 +135,14 @@ public class CartomancyManager {
                 }
                 catch (Exception e) {
                     log.error(e.getMessage());
-                }
+                }*/
             }
         });
         thread.start();
     }
-
+/*
     private void startAutoService(Order order, TelegramBot bot) {
-        List<String> cardNames = auguryResultDao.getCardNames();
+        List<String> cardNames = predictionManager.getCardNames();
         int randomIndex = (int)(Math.random() *cardNames.size());
         String cardName = cardNames.get(randomIndex);
         TarotAnswer answer = new TarotAnswer(order, cardName);
@@ -155,7 +153,7 @@ public class CartomancyManager {
             log.error(e.getMessage());
         }
     }
-
+*/
     private void sendTrueAnswer(Long chatId, TelegramBot bot, TarotAnswer answer) throws TelegramApiException {
         SendPhoto sendPhoto = new SendPhoto();
         sendPhoto.setChatId(String.valueOf(chatId));
@@ -165,62 +163,6 @@ public class CartomancyManager {
         bot.execute(sendPhoto);
     }
 
-    public void sendFalseAnswer(String chatId, TelegramBot bot, String text) throws TelegramApiException {
-        SendMessage sendMessage = new SendMessage(chatId, text);
-        bot.execute(sendMessage);
-    }
 
-    private void useOrder(Order order) {
-        order.setLastUse(new Date(System.currentTimeMillis()));
-        order.setCountUse(order.getCountUse() + 1);
-        order.setAllUse(order.getAllUse() + 1);
-        orderDao.save(order);
-    }
 
-    private Order createOrder(String chatId, String serviceName) {
-        Service service = getService(serviceName);
-        int countDay = service.getCountDay();
-        int countUse = service.getCountUse();
-        OrderId orderId = new OrderId(Long.valueOf(chatId), serviceName);
-        Order order = new Order();
-        order.setOrderId(orderId);
-        order.setLastUse(new Date(System.currentTimeMillis()));
-        order.setEndUse(new Timestamp(System.currentTimeMillis() + 86400000L * countDay));
-        order.setMaxUse(service.getCountUse());
-        order.setMaxAllUse(service.getMaxUse());
-        order.setPrice(service.getPrice());
-        order.setCountUse(0);
-        order.setAllUse(0);
-        order.setCategory(stateDao.getSelectAugury(Long.valueOf(chatId)));
-        orderDao.save(order);
-        return order;
-    }
-
-    private CHECKED_STATE checkedOrder(Order order) {
-
-        Timestamp endUse = order.getEndUse();
-        Timestamp currentTimeDate = new Timestamp(System.currentTimeMillis());
-        boolean isEndUse = endUse.compareTo(currentTimeDate)>0;
-        if(!isEndUse)
-            return CHECKED_STATE.END_DATE_FAILED;
-
-        int allUseService = order.getAllUse();
-        int maxAllUseService = order.getMaxAllUse();
-        boolean isAllUse = allUseService<maxAllUseService;
-        if(!isAllUse)
-            return CHECKED_STATE.ALL_USE_FAILED;
-
-        Date currentDate = new Date(System.currentTimeMillis());
-        Date lastUse = order.getLastUse();
-        boolean isLastUse = currentDate.compareTo(lastUse)>0;
-        if(!isLastUse) {
-            int useService = order.getCountUse();
-            int maxUseService = order.getMaxAllUse();
-            boolean isCountUse = useService<maxUseService;
-            if(!isCountUse)
-                return CHECKED_STATE.COUNT_USE_FAILED;
-        }
-
-        return CHECKED_STATE.ACTIVE;
-    }
 }

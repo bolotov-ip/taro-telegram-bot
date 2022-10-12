@@ -1,14 +1,15 @@
-package com.everydaytarot.tarotelegrambot.model.user;
+package com.everydaytarot.tarotelegrambot.model;
 
 import org.telegram.telegrambots.meta.api.objects.Message;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import java.sql.Timestamp;
 
 @Entity(name = "users")
 public class User {
-
+    static enum Role { USER, ADMIN; }
     public static User createUserAdmin(Message msg) {
         User user = createUser(msg);
         user.setRole(Role.USER.toString() + ";" + Role.ADMIN.toString());
@@ -23,7 +24,6 @@ public class User {
         user.setLastName(msg.getChat().getLastName());
         user.setDateRegistration(new Timestamp(System.currentTimeMillis()));
         user.setRole(Role.USER.toString());
-        user.setShirt("");
 
         return user;
     }
@@ -35,27 +35,24 @@ public class User {
     }
 
     @Id
+    @Column(name = "id_chat")
     Long idChat;
 
+    @Column(name = "user_name")
     String userName;
 
+    @Column(name = "first_name")
     String firstName;
 
+    @Column(name = "last_name")
     String lastName;
 
+    @Column(name = "date_registration")
     Timestamp dateRegistration;
 
+    @Column(name = "role")
     String role;
 
-    String shirt;
-
-    public String getShirt() {
-        return shirt;
-    }
-
-    public void setShirt(String shirt) {
-        this.shirt = shirt;
-    }
 
     public Long getIdChat() {
         return idChat;

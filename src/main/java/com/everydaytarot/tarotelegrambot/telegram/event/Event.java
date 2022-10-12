@@ -1,7 +1,7 @@
-package com.everydaytarot.tarotelegrambot.telegram.handler;
+package com.everydaytarot.tarotelegrambot.telegram.event;
 
 import com.everydaytarot.tarotelegrambot.config.BotConfig;
-import com.everydaytarot.tarotelegrambot.dao.StateDao;
+import com.everydaytarot.tarotelegrambot.business.StateManager;
 import com.everydaytarot.tarotelegrambot.telegram.TelegramBot;
 import com.everydaytarot.tarotelegrambot.telegram.constant.STATE_BOT;
 import com.everydaytarot.tarotelegrambot.telegram.domain.AnswerBot;
@@ -32,7 +32,7 @@ import java.util.List;
 public class Event {
 
     @Autowired
-    protected StateDao stateDao;
+    protected StateManager stateManager;
 
     @Autowired
     protected BotConfig botConfig;
@@ -62,7 +62,7 @@ public class Event {
         editMessage.setMessageId((int)messageId);
         setButton(btnList, editMessage, countColumn);
         AnswerBot answer = new AnswerBot(editMessage);
-        stateDao.setState(stateBot, Long.valueOf(chatId));
+        stateManager.setState(stateBot, Long.valueOf(chatId));
 
         return answer;
     }

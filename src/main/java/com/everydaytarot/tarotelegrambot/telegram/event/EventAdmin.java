@@ -1,7 +1,7 @@
-package com.everydaytarot.tarotelegrambot.telegram.handler;
+package com.everydaytarot.tarotelegrambot.telegram.event;
 
-import com.everydaytarot.tarotelegrambot.dao.AuguryResultDao;
-import com.everydaytarot.tarotelegrambot.dao.ServiceDao;
+import com.everydaytarot.tarotelegrambot.business.PredictionManager;
+import com.everydaytarot.tarotelegrambot.business.ServiceManager;
 import com.everydaytarot.tarotelegrambot.service.ExcelParser;
 import com.everydaytarot.tarotelegrambot.telegram.constant.BUTTONS;
 import com.everydaytarot.tarotelegrambot.telegram.domain.AnswerBot;
@@ -28,10 +28,10 @@ import java.util.List;
 public class EventAdmin extends Event {
 
     @Autowired
-    AuguryResultDao auguryResultDao;
+    PredictionManager predictionManager;
 
     @Autowired
-    ServiceDao serviceDao;
+    ServiceManager serviceManager;
 
     @Autowired
     ExcelParser excelParser;
@@ -106,7 +106,7 @@ public class EventAdmin extends Event {
 
     public AnswerBot pressBack(Update update) {
         Message msg = update.getCallbackQuery().getMessage();
-        STATE_BOT state = stateDao.getState(msg.getChatId());
+        STATE_BOT state = stateManager.getState(msg.getChatId());
         if(state.equals(STATE_BOT.ADMIN_MENU))
             return start(update);
         else if(state.equals(STATE_BOT.INPUT_XLSX_AUGURY) || state.equals(STATE_BOT.INPUT_XLSX_SERVICE) ||  state.equals(STATE_BOT.INPUT_CARD))
@@ -140,10 +140,10 @@ public class EventAdmin extends Event {
                 @Override
                 public void run() {
                     if(state.equals(STATE_BOT.INPUT_XLSX_AUGURY)) {
-                        auguryResultDao.clearAuguryTables();
-                        excelParser.parserXlsxAugury(path);
+                        predictionManager.clearAuguryTables();
+                        excelParser.parserPredictionXlsx(path);
                     } else if (state.equals(STATE_BOT.INPUT_XLSX_SERVICE)) {
-                        serviceDao.removeAllService();
+                        serviceManager.removeAllService();
                         excelParser.parseXlsxService(path);
                     }
 
