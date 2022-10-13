@@ -1,5 +1,6 @@
 package com.everydaytarot.tarotelegrambot.service;
 
+import com.everydaytarot.tarotelegrambot.config.SERVICE_TYPE;
 import com.everydaytarot.tarotelegrambot.dao.ServiceDao;
 import com.everydaytarot.tarotelegrambot.model.Service;
 import org.apache.poi.ss.usermodel.*;
@@ -26,11 +27,11 @@ public class ServiceManager {
         return service.isPresent()?service.get():null;
     }
 
-    public List<Service> getActiveServices() {
-        return serviceDao.getActiveServices();
+    public List<Service> getActiveServices(SERVICE_TYPE serviceType) {
+        return serviceDao.getActiveServices(serviceType.toString());
     }
 
-    public void parseFileExcel(String path) {
+    public void parseFileExcel(String path, SERVICE_TYPE service_type) {
         try {
             int COUNT_COLUMN = 6;
             int START_ROW = 2;
@@ -69,9 +70,10 @@ public class ServiceManager {
                     else if(i==5)
                         service.setPrice(Long.valueOf(cellValue));
                 }
+                service.setType(service_type.toString());
                 serviceList.add(service);
             }
-            deactivationActiveService();
+            deactivationActiveService(service_type);
             serviceDao.saveAllAndFlush(serviceList);
         }
         catch (Exception e) {
@@ -79,8 +81,8 @@ public class ServiceManager {
         }
     }
 
-    private void deactivationActiveService() {
-        List<Service> services = getActiveServices();
+    private void deactivationActiveService(SERVICE_TYPE serviceType) {
+        List<Service> services = getActiveServices(serviceType);
         for(Service service : services) {
             service.setState(Service.State.NONACTIVE.toString());
         }

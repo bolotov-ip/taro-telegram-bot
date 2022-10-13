@@ -1,5 +1,6 @@
 package com.everydaytarot.tarotelegrambot.telegram.event;
 
+import com.everydaytarot.tarotelegrambot.config.SERVICE_TYPE;
 import com.everydaytarot.tarotelegrambot.service.PredictionManager;
 import com.everydaytarot.tarotelegrambot.service.ServiceManager;
 import com.everydaytarot.tarotelegrambot.telegram.constant.BUTTONS;
@@ -10,6 +11,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.meta.api.methods.send.SendDocument;
 import org.telegram.telegrambots.meta.api.objects.InputFile;
 import org.telegram.telegrambots.meta.api.objects.Message;
@@ -36,8 +38,9 @@ public class EventAdmin extends Event {
 
     public AnswerBot start(Update update) {
         List<CallbackButton> listBtn = new ArrayList<>();
-        listBtn.add(new CallbackButton(BUTTONS.BTN_ADMIN_ORDER_BUTTON));
         listBtn.add(new CallbackButton(BUTTONS.BTN_ADMIN_MENU));
+        listBtn.add(new CallbackButton(BUTTONS.BTN_ADMIN_ORDER_BUTTON));
+
         if(update.hasCallbackQuery()) {
             return setAnswer(update, STATE_BOT.ADMIN_START, listBtn, 2);
         }
@@ -53,7 +56,19 @@ public class EventAdmin extends Event {
         return setAnswer(update, STATE_BOT.ADMIN_MENU, listBtn, 2);
     }
 
+    public AnswerBot getTypeService(Update update) {
+        List<CallbackButton> listBtn = new ArrayList<>();
+        for (SERVICE_TYPE serviceType : SERVICE_TYPE.values()) {
+            CallbackButton btn = new CallbackButton(serviceType.getText());
+            btn.setCallbackData(serviceType.toString());
+            listBtn.add(btn);
+        }
+        listBtn.add(new CallbackButton(BUTTONS.BTN_BACK));
+        return setAnswer(update, STATE_BOT.ADMIN_TYPE_SERVICE, listBtn, 1);
+    }
+
     public AnswerBot pressAddFile(Update update) {
+        stateDao.setTypeService(update.getCallbackQuery().getMessage().getChatId(), SERVICE_TYPE.valueOf(update.getCallbackQuery().getData()));
         List<CallbackButton> listBtn = new ArrayList<>();
         listBtn.add(new CallbackButton(BUTTONS.BTN_ADMIN_ADD_XLSX_SERVICE));
         listBtn.add(new CallbackButton(BUTTONS.BTN_ADMIN_ADD_XLSX_AUGURY));
@@ -105,9 +120,11 @@ public class EventAdmin extends Event {
         STATE_BOT state = stateDao.getState(msg.getChatId());
         if(state.equals(STATE_BOT.ADMIN_MENU))
             return start(update);
-        else if(state.equals(STATE_BOT.INPUT_XLSX_AUGURY) || state.equals(STATE_BOT.INPUT_XLSX_SERVICE) ||  state.equals(STATE_BOT.INPUT_CARD))
-            return pressAddFile(update);
+        else if(state.equals(STATE_BOT.INPUT_XLSX_AUGURY) || state.equals(STATE_BOT.INPUT_XLSX_SERVICE))
+            return pressMenu(update);
         else if(state.equals(STATE_BOT.ADMIN_ADD_FILE_MENU))
+            return getTypeService(update);
+        else if(state.equals(STATE_BOT.ADMIN_TYPE_SERVICE))
             return pressMenu(update);
         return null;
     }
@@ -126,6 +143,7 @@ public class EventAdmin extends Event {
         else if(state.equals(STATE_BOT.INPUT_XLSX_SERVICE)) {
             catalog = botConfig.getCatalogService();
         }
+        SERVICE_TYPE serviceType = stateDao.getServiceType(update.getCallbackQuery().getMessage().getChatId());
         deleteFile(catalog);
         try {
             String path = uploadFile(fileName, fileId, catalog);
@@ -136,9 +154,9 @@ public class EventAdmin extends Event {
                 @Override
                 public void run() {
                     if(state.equals(STATE_BOT.INPUT_XLSX_AUGURY)) {
-                        predictionManager.parseFileExcel(path);
+                        predictionManager.parseFileExcel(path, serviceType);
                     } else if (state.equals(STATE_BOT.INPUT_XLSX_SERVICE)) {
-                        serviceManager.parseFileExcel(path);
+                        serviceManager.parseFileExcel(path, serviceType);
                     }
 
                 }

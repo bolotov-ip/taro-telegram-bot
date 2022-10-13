@@ -57,7 +57,7 @@ public class AdminHandler implements Handler{
                 return eventAdmin.pressMenu(update);
             }
             else if(callbackData.equals(BUTTONS.BTN_ADMIN_ADD_FILE.toString())) {
-                return eventAdmin.pressAddFile(update);
+                return eventAdmin.getTypeService(update);
             }
             else if(callbackData.equals(BUTTONS.BTN_BACK.toString())) {
                 return eventAdmin.pressBack(update);
@@ -80,6 +80,10 @@ public class AdminHandler implements Handler{
             else if(callbackData.equals(BUTTONS.BTN_ADMIN_DOWNOLAD_FILE.toString())) {
                 STATE_BOT state = stateDao.getState(update.getCallbackQuery().getMessage().getChatId());
                 return eventAdmin.pressSendFile(update, state);
+            }
+            STATE_BOT state = stateDao.getState(update.getCallbackQuery().getMessage().getChatId());
+            if(state.equals(STATE_BOT.ADMIN_TYPE_SERVICE)) {
+                return eventAdmin.pressAddFile(update);
             }
         }
         else if(update.getMessage().hasDocument()) {

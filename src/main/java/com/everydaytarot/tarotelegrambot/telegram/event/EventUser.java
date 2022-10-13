@@ -1,5 +1,6 @@
 package com.everydaytarot.tarotelegrambot.telegram.event;
 
+import com.everydaytarot.tarotelegrambot.config.SERVICE_TYPE;
 import com.everydaytarot.tarotelegrambot.service.PredictionManager;
 import com.everydaytarot.tarotelegrambot.service.ServiceManager;
 import com.everydaytarot.tarotelegrambot.model.Service;
@@ -35,14 +36,19 @@ public class EventUser extends Event {
 
     public AnswerBot start(Update update) {
         List<CallbackButton> listBtn = new ArrayList<>();
-        listBtn.add(new CallbackButton(BUTTONS.BTN_USER_MENU));
-        listBtn.add(new CallbackButton(BUTTONS.BTN_USER_MENU_SERVICE));
-        return setAnswer(update, STATE_BOT.USER_START, listBtn, 2);
+        for (SERVICE_TYPE serviceType : SERVICE_TYPE.values()) {
+            CallbackButton btn = new CallbackButton(serviceType.getText());
+            btn.setCallbackData(serviceType.toString());
+            listBtn.add(btn);
+        }
+        int column = listBtn.size()>2?1:2;
+        return setAnswer(update, STATE_BOT.USER_START, listBtn, column);
     }
 
     public AnswerBot getListService(Update update) {
         List<CallbackButton> listBtn = new ArrayList<>();
-        List<Service> activeServices = serviceManager.getActiveServices();
+        SERVICE_TYPE serviceType = stateDao.getServiceType(update.getCallbackQuery().getMessage().getChatId());
+        List<Service> activeServices = serviceManager.getActiveServices(serviceType);
         for(Service service : activeServices) {
             CallbackButton btn = new CallbackButton(service.getName());
             btn.setCallbackData(service.getId().toString());
@@ -68,7 +74,8 @@ public class EventUser extends Event {
 
     public AnswerBot getCategoryPrediction(Update update) {
         String callbackData = update.getCallbackQuery().getData();
-        List<String> listTypeAugury = predictionManager.getAllCategory();
+        SERVICE_TYPE service_type = stateDao.getServiceType(update.getCallbackQuery().getMessage().getChatId());
+        List<String> listTypeAugury = predictionManager.getAllCategory(service_type);
         List<CallbackButton> listBtn = new ArrayList<>();
         for(String type : listTypeAugury) {
             listBtn.add(new CallbackButton(type));
@@ -78,7 +85,7 @@ public class EventUser extends Event {
         return answer;
     }
 
-    public AnswerBot selectTypeAugury(Update update, TelegramBot bot) {
+    public AnswerBot selectTypeAugury(Update update) {
         String callbackData = update.getCallbackQuery().getData();
         Long chatId = update.getCallbackQuery().getMessage().getChatId();
         stateDao.setSelectAugury(callbackData, chatId);
@@ -94,7 +101,7 @@ public class EventUser extends Event {
             List<CallbackButton> listBtn = new ArrayList<>();
             listBtn.add(new CallbackButton(BUTTONS.BTN_BACK));
             AnswerBot answer = setAnswer(update, STATE_BOT.USER_FINISH, listBtn , 1);
-            cartomancyManager.startService(chatId, service.getId(), bot);
+            cartomancyManager.start(chatId, service.getId());
             return answer;
         }
     }

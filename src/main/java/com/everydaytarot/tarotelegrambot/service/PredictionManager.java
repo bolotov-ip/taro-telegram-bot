@@ -1,5 +1,6 @@
 package com.everydaytarot.tarotelegrambot.service;
 
+import com.everydaytarot.tarotelegrambot.config.SERVICE_TYPE;
 import com.everydaytarot.tarotelegrambot.dao.PredictionDao;
 import com.everydaytarot.tarotelegrambot.model.Prediction;
 import org.apache.poi.ss.usermodel.CellType;
@@ -24,7 +25,7 @@ public class PredictionManager {
 
     private final Logger log = LoggerFactory.getLogger(PredictionManager.class);
 
-    private void savePrediction(String card, String category, String text) {
+    private void savePrediction(String card, String category, String text, SERVICE_TYPE service_type) {
         Optional<Prediction> auguryResult =  predictionDao.findPrediction(card, category);
         Prediction newPrediction;
         if(auguryResult.isEmpty())
@@ -34,6 +35,7 @@ public class PredictionManager {
         newPrediction.setCard(card);
         newPrediction.setCategory(category);
         newPrediction.setText(text);
+        newPrediction.setTypeService(service_type.toString());
         predictionDao.save(newPrediction);
     }
 
@@ -45,7 +47,7 @@ public class PredictionManager {
         return new ArrayList<>(cards);
     }
 
-    public List<String> getAllCategory() {
+    public List<String> getAllCategory(SERVICE_TYPE service_type) {
         List<Prediction> predictions = predictionDao.getCategories();
         Set<String> categories = new HashSet<>();
         for(Prediction prediction : predictions)
@@ -65,7 +67,7 @@ public class PredictionManager {
             return "";
     }
 
-    public void parseFileExcel(String path) {
+    public void parseFileExcel(String path, SERVICE_TYPE service_type) {
         try {
             FileInputStream file = new FileInputStream(new File(path));
             Workbook workbook = new XSSFWorkbook(file);
@@ -88,9 +90,9 @@ public class PredictionManager {
                 }
 
                 String text = row.getCell(1)!=null&&row.getCell(2).getCellType().equals(CellType.STRING)?row.getCell(2).getStringCellValue():"";
-                if(card == null || card.equals("") || category == null || category.equals("") ||text == null || text.equals(""))
+                if(text == null || text.equals(""))
                     continue;
-                this.savePrediction(card, category, text);
+                this.savePrediction(card, category, text, service_type);
             }
         }
         catch (Exception e) {

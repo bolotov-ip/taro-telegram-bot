@@ -19,6 +19,9 @@ public class Prediction {
     @Column(name = "text")
     String text;
 
+    @Column(name = "type_service")
+    String typeService;
+
     public Long getId() {
         return id;
     }
@@ -49,5 +52,13 @@ public class Prediction {
 
     public void setText(String text) {
         this.text = text;
+    }
+
+    public String getTypeService() {
+        return typeService;
+    }
+
+    public void setTypeService(String typeService) {
+        this.typeService = typeService;
     }
 }

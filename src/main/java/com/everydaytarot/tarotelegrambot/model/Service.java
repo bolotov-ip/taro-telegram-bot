@@ -9,21 +9,40 @@ public class Service {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name="id")
     Long id;
 
+    @Column(name="name")
     String name;
 
+    @Column(name="description")
     String description;
 
+    @Column(name="count_use")
     Integer countUse;
 
+    @Column(name="max_use")
     Integer maxUse;
 
+    @Column(name="count_day")
     Integer countDay;
 
+    @Column(name="price")
     Long price;
 
+    @Column(name="state")
     String state = State.ACTIVE.toString();
+
+    @Column(name="type")
+    String type;
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
 
     public Long getId() {
         return id;

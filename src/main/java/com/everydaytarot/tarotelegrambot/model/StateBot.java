@@ -15,6 +15,7 @@ public class StateBot {
         stateBot.setSelectAugury("");
         stateBot.setSelectService(0L);
         stateBot.setSelectShirt("");
+        stateBot.setTypeService("");
         return stateBot;
     }
 
@@ -28,6 +29,16 @@ public class StateBot {
     Long selectService;
 
     String selectShirt;
+
+    String selectTypeService;
+
+    public String getSelectTypeService() {
+        return selectTypeService;
+    }
+
+    public void setTypeService(String selectTypeService) {
+        this.selectTypeService = selectTypeService;
+    }
 
     public String getSelectShirt() {
         return selectShirt;

@@ -1,5 +1,6 @@
 package com.everydaytarot.tarotelegrambot.dao;
 
+import com.everydaytarot.tarotelegrambot.config.SERVICE_TYPE;
 import com.everydaytarot.tarotelegrambot.model.StateBot;
 import com.everydaytarot.tarotelegrambot.telegram.constant.STATE_BOT;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -79,5 +80,26 @@ public interface StateDao extends JpaRepository<StateBot, Long> {
             return state.get().getSelectService();
         else
             return 0L;
+    }
+
+    default void setTypeService(Long chatId, SERVICE_TYPE service_type) {
+        Optional<StateBot> state = findById(chatId);
+        if(state.isPresent()) {
+            state.get().setTypeService(service_type.toString());
+            save(state.get());
+        }
+        else{
+            StateBot newState = StateBot.createStateBot(chatId, STATE_BOT.USER_START);
+            newState.setTypeService(service_type.toString());
+            save(newState);
+        }
+    }
+
+    default SERVICE_TYPE getServiceType(Long chatId){
+        Optional<StateBot> state = findById(chatId);
+        if(state.isPresent())
+            return SERVICE_TYPE.valueOf(state.get().getSelectTypeService());
+        else
+            return SERVICE_TYPE.CARTOMANCY;
     }
 }

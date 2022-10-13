@@ -73,11 +73,14 @@ public class UserHandler implements Handler{
             }
 
             STATE_BOT state = stateDao.getState(update.getCallbackQuery().getMessage().getChatId());
-            if(state.equals(STATE_BOT.USER_SERVICE_LIST)){
+            if(state.equals(STATE_BOT.USER_START)){
+
+            }
+            else if(state.equals(STATE_BOT.USER_SERVICE_LIST)){
                 return eventUser.getServiceDetails(update);
             }
             else if(state.equals(STATE_BOT.USER_SELECT_CATEGORY)){
-                return eventUser.selectTypeAugury(update, bot);
+                return eventUser.selectTypeAugury(update);
             }
             return null;
         }
