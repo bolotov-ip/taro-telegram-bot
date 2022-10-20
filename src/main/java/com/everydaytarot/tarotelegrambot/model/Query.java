@@ -3,8 +3,8 @@ package com.everydaytarot.tarotelegrambot.model;
 import javax.persistence.*;
 import java.sql.Date;
 
-@Entity(name = "questions")
-public class Question {
+@Entity(name = "querys")
+public class Query {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

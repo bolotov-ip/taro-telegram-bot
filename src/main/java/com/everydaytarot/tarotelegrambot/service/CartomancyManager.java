@@ -1,11 +1,10 @@
 package com.everydaytarot.tarotelegrambot.service;
 
-import com.everydaytarot.tarotelegrambot.dao.AnswerDao;
 import com.everydaytarot.tarotelegrambot.dao.OrderDao;
-import com.everydaytarot.tarotelegrambot.dao.QuestionDao;
+import com.everydaytarot.tarotelegrambot.dao.QueryDao;
 import com.everydaytarot.tarotelegrambot.dao.StateDao;
 import com.everydaytarot.tarotelegrambot.model.Order;
-import com.everydaytarot.tarotelegrambot.model.Question;
+import com.everydaytarot.tarotelegrambot.model.Query;
 import com.everydaytarot.tarotelegrambot.telegram.TelegramBot;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,7 +27,7 @@ public class CartomancyManager {
     private StateDao stateDao;
 
     @Autowired
-    private QuestionDao questionDao;
+    private QueryDao queryDao;
 
     private TelegramBot bot;
 
@@ -36,7 +35,7 @@ public class CartomancyManager {
 
     public void start(Long chatId, Long serviceId) {
         Order newOrder = createOrder(chatId, serviceId);
-        Question question = createQuestion(newOrder);
+        Query query = createQuestion(newOrder);
     }
 
     private Order createOrder(Long chatId, Long serviceId) {
@@ -47,12 +46,12 @@ public class CartomancyManager {
         return newOrder;
     }
 
-    private Question createQuestion(Order order) {
-        Question question = new Question();
-        question.setDate(new Date(System.currentTimeMillis()));
-        question.setOrderId(order.getId());
-        question.setCategoryPrediction(stateDao.getSelectAugury(order.getChatId()));
-        return questionDao.save(question);
+    private Query createQuestion(Order order) {
+        Query query = new Query();
+        query.setDate(new Date(System.currentTimeMillis()));
+        query.setOrderId(order.getId());
+        query.setCategoryPrediction(stateDao.getSelectAugury(order.getChatId()));
+        return queryDao.save(query);
     }
 
 
