@@ -1,79 +1,105 @@
 package com.everydaytarot.tarotelegrambot.dao;
 
-import com.everydaytarot.tarotelegrambot.model.telegram.StateBotUser;
-import com.everydaytarot.tarotelegrambot.repository.StateBotUserRepository;
+import com.everydaytarot.tarotelegrambot.config.SERVICE_TYPE;
+import com.everydaytarot.tarotelegrambot.model.StateBot;
 import com.everydaytarot.tarotelegrambot.telegram.constant.STATE_BOT;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
 
-@Component
-public class StateDao {
+@Repository
+public interface StateDao extends JpaRepository<StateBot, Long> {
 
-    @Autowired
-    private StateBotUserRepository stateBotUserRepository;
+    default void setState(STATE_BOT state, Long chatId) {
 
-    public void setState(STATE_BOT state, Long chatId) {
-
-        Optional<StateBotUser> oldState = stateBotUserRepository.findById(chatId);
+        Optional<StateBot> oldState = findById(chatId);
         if(oldState.isEmpty()) {
-            StateBotUser newState = StateBotUser.createStateBot(chatId, state);
-            stateBotUserRepository.save(newState);
+            StateBot newState = StateBot.createStateBot(chatId, state);
+            save(newState);
         }
         else {
             oldState.get().setStateBot(state.toString());
-            stateBotUserRepository.save(oldState.get());
+            save(oldState.get());
         }
     }
 
-    public STATE_BOT getState(Long chatId) {
-        Optional<StateBotUser> state = stateBotUserRepository.findById(chatId);
+    default STATE_BOT getState(Long chatId) {
+        Optional<StateBot> state = findById(chatId);
         if(state.isPresent())
             return STATE_BOT.valueOf(state.get().getStateBot());
         else
             return STATE_BOT.ADMIN_START;
     }
 
-    public void setSelectAugury(String augury, Long chatId) {
-        Optional<StateBotUser> oldAugury = stateBotUserRepository.findById(chatId);
+    default String getShirt(Long chatId) {
+        Optional<StateBot> state = findById(chatId);
+        if(state.isPresent())
+            return state.get().getSelectShirt();
+        else
+            return "";
+    }
+
+    default void setSelectAugury(String augury, Long chatId) {
+        Optional<StateBot> oldAugury = findById(chatId);
         if(oldAugury.isPresent()){
             oldAugury.get().setSelectAugury(augury);
-            stateBotUserRepository.save(oldAugury.get());
+            save(oldAugury.get());
         }
         else{
-            StateBotUser newState = StateBotUser.createStateBot(chatId, STATE_BOT.USER_START);
-            newState.setSelectService(augury);
-            stateBotUserRepository.save(newState);
+            StateBot newState = StateBot.createStateBot(chatId, STATE_BOT.USER_START);
+            newState.setSelectAugury(augury);
+            save(newState);
         }
     }
 
-    public String getSelectAugury(Long chatId) {
-        Optional<StateBotUser> state = stateBotUserRepository.findById(chatId);
+    default String getSelectAugury(Long chatId) {
+        Optional<StateBot> state = findById(chatId);
         if(state.isPresent())
             return state.get().getSelectAugury();
         else
             return "";
     }
 
-    public void setSelectService(String service, Long chatId) {
-        Optional<StateBotUser> oldAugury = stateBotUserRepository.findById(chatId);
+    default void setSelectService(Long service, Long chatId) {
+        Optional<StateBot> oldAugury = findById(chatId);
         if(oldAugury.isPresent()) {
             oldAugury.get().setSelectService(service);
-            stateBotUserRepository.save(oldAugury.get());
+            save(oldAugury.get());
         }
         else{
-            StateBotUser newState = StateBotUser.createStateBot(chatId, STATE_BOT.USER_START);
+            StateBot newState = StateBot.createStateBot(chatId, STATE_BOT.USER_START);
             newState.setSelectService(service);
-            stateBotUserRepository.save(newState);
+            save(newState);
         }
     }
 
-    public String getSelectService(Long chatId) {
-        Optional<StateBotUser> state = stateBotUserRepository.findById(chatId);
+    default Long getSelectService(Long chatId) {
+        Optional<StateBot> state = findById(chatId);
         if(state.isPresent())
             return state.get().getSelectService();
         else
-            return "";
+            return 0L;
+    }
+
+    default void setTypeService(Long chatId, SERVICE_TYPE service_type) {
+        Optional<StateBot> state = findById(chatId);
+        if(state.isPresent()) {
+            state.get().setTypeService(service_type.toString());
+            save(state.get());
+        }
+        else{
+            StateBot newState = StateBot.createStateBot(chatId, STATE_BOT.USER_START);
+            newState.setTypeService(service_type.toString());
+            save(newState);
+        }
+    }
+
+    default SERVICE_TYPE getServiceType(Long chatId){
+        Optional<StateBot> state = findById(chatId);
+        if(state.isPresent())
+            return SERVICE_TYPE.valueOf(state.get().getSelectTypeService());
+        else
+            return SERVICE_TYPE.CARTOMANCY;
     }
 }

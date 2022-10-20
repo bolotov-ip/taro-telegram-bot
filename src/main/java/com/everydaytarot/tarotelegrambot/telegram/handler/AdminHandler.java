@@ -16,8 +16,8 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 @Component
 public class AdminHandler implements Handler{
 
-    @Autowired
-    private EventAdmin eventAdminHandler;
+
+    private EventAdmin eventAdmin;
 
     @Autowired
     private StateDao stateDao;
@@ -43,10 +43,10 @@ public class AdminHandler implements Handler{
             String textMessage = update.getMessage().getText();
 
             if(textMessage.equals(COMMANDS.COMMAND_START.getText())) {
-                return eventAdminHandler.start(update);
+                return eventAdmin.start(update);
             }
             else {
-                return eventAdminHandler.commandNotSupport(update);
+                return eventAdmin.commandNotSupport(update);
             }
 
         } else if(update.hasCallbackQuery()) {
@@ -54,42 +54,46 @@ public class AdminHandler implements Handler{
             String callbackData = update.getCallbackQuery().getData();
 
             if(callbackData.equals(BUTTONS.BTN_ADMIN_MENU.toString())) {
-                return eventAdminHandler.pressMenu(update);
+                return eventAdmin.pressMenu(update);
             }
             else if(callbackData.equals(BUTTONS.BTN_ADMIN_ADD_FILE.toString())) {
-                return eventAdminHandler.pressAddFile(update);
+                return eventAdmin.getTypeService(update);
             }
             else if(callbackData.equals(BUTTONS.BTN_BACK.toString())) {
-                return eventAdminHandler.pressBack(update);
+                return eventAdmin.pressBack(update);
             }
             else if(callbackData.equals(BUTTONS.BTN_BACK_TO_START.toString())) {
-                return eventAdminHandler.start(update);
+                return eventAdmin.start(update);
             }
             else if(callbackData.equals(BUTTONS.BTN_ADMIN_AGAIN_LOAD.toString())) {
-                return eventAdminHandler.pressAddFile(update);
+                return eventAdmin.pressAddFile(update);
             }
             else if(callbackData.equals(BUTTONS.BTN_CANCEL.toString())) {
-                return eventAdminHandler.pressBack(update);
+                return eventAdmin.pressBack(update);
             }
             else if(callbackData.equals(BUTTONS.BTN_ADMIN_ADD_XLSX_SERVICE.toString())) {
-                return eventAdminHandler.pressLoadServise(update);
+                return eventAdmin.pressLoadServise(update);
             }
             else if(callbackData.equals(BUTTONS.BTN_ADMIN_ADD_XLSX_AUGURY.toString())) {
-                return eventAdminHandler.pressLoadAugury(update);
+                return eventAdmin.pressLoadAugury(update);
             }
             else if(callbackData.equals(BUTTONS.BTN_ADMIN_DOWNOLAD_FILE.toString())) {
                 STATE_BOT state = stateDao.getState(update.getCallbackQuery().getMessage().getChatId());
-                return eventAdminHandler.pressSendFile(update, state);
+                return eventAdmin.pressSendFile(update, state);
+            }
+            STATE_BOT state = stateDao.getState(update.getCallbackQuery().getMessage().getChatId());
+            if(state.equals(STATE_BOT.ADMIN_TYPE_SERVICE)) {
+                return eventAdmin.pressAddFile(update);
             }
         }
         else if(update.getMessage().hasDocument()) {
             STATE_BOT state = stateDao.getState(update.getMessage().getChatId());
             if(state.equals(STATE_BOT.INPUT_XLSX_AUGURY) || state.equals(STATE_BOT.INPUT_XLSX_SERVICE)) {
-                return eventAdminHandler.getFile(update, state);
+                return eventAdmin.getFile(update, state);
             }
         }
         else {
-            return eventAdminHandler.commandNotSupport(update);
+            return eventAdmin.commandNotSupport(update);
         }
         return null;
     }

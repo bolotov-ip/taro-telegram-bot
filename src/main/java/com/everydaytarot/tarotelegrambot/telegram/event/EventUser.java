@@ -1,8 +1,11 @@
 package com.everydaytarot.tarotelegrambot.telegram.event;
 
-import com.everydaytarot.tarotelegrambot.dao.UserDao;
-import com.everydaytarot.tarotelegrambot.model.service.Service;
-import com.everydaytarot.tarotelegrambot.service.card_day.CardDayService;
+
+import com.everydaytarot.tarotelegrambot.config.SERVICE_TYPE;
+import com.everydaytarot.tarotelegrambot.service.PredictionManager;
+import com.everydaytarot.tarotelegrambot.service.ServiceManager;
+import com.everydaytarot.tarotelegrambot.model.Service;
+import com.everydaytarot.tarotelegrambot.service.CartomancyManager;
 import com.everydaytarot.tarotelegrambot.telegram.TelegramBot;
 import com.everydaytarot.tarotelegrambot.telegram.constant.BUTTONS;
 import com.everydaytarot.tarotelegrambot.telegram.constant.STATE_BOT;
@@ -23,31 +26,44 @@ import java.util.List;
 public class EventUser extends Event {
 
     @Autowired
-    CardDayService cardDayService;
+    CartomancyManager cartomancyManager;
 
     @Autowired
-    UserDao userDao;
+    ServiceManager serviceManager;
+
+    @Autowired
+    PredictionManager predictionManager;
+
 
     public AnswerBot start(Update update) {
         List<CallbackButton> listBtn = new ArrayList<>();
-        listBtn.add(new CallbackButton(BUTTONS.BTN_USER_MENU));
-        listBtn.add(new CallbackButton(BUTTONS.BTN_USER_MENU_SERVICE));
-        return setAnswer(update, STATE_BOT.USER_START, listBtn, 2);
+        for (SERVICE_TYPE serviceType : SERVICE_TYPE.values()) {
+            CallbackButton btn = new CallbackButton(serviceType.getText());
+            btn.setCallbackData(serviceType.toString());
+            listBtn.add(btn);
+        }
+        int column = listBtn.size()>2?1:2;
+        return setAnswer(update, STATE_BOT.USER_START, listBtn, column);
     }
 
     public AnswerBot getListService(Update update) {
         List<CallbackButton> listBtn = new ArrayList<>();
-        List<String> listNamesService = cardDayService.getListServiceName();
-        for(String nameService : listNamesService)
-            listBtn.add(new CallbackButton(nameService));
+        SERVICE_TYPE serviceType = stateDao.getServiceType(update.getCallbackQuery().getMessage().getChatId());
+        List<Service> activeServices = serviceManager.getActiveServices(serviceType);
+        for(Service service : activeServices) {
+            CallbackButton btn = new CallbackButton(service.getName());
+            btn.setCallbackData(service.getId().toString());
+            listBtn.add(btn);
+        }
         listBtn.add(new CallbackButton(BUTTONS.BTN_BACK));
         return setAnswer(update, STATE_BOT.USER_SERVICE_LIST, listBtn, 1);
     }
 
     public AnswerBot getServiceDetails(Update update) {
         String callbackData = update.getCallbackQuery().getData();
-        stateDao.setSelectService(callbackData, update.getCallbackQuery().getMessage().getChatId());
-        Service service = cardDayService.getService(callbackData);
+        Long chatId = update.getCallbackQuery().getMessage().getChatId();
+        stateDao.setSelectService(Long.valueOf(callbackData), chatId);
+        Service service = serviceManager.getService(chatId);
         String description = service.getDescription();
         List<CallbackButton> listBtn = new ArrayList<>();
         listBtn.add(new CallbackButton(BUTTONS.BTN_BACK));
@@ -57,9 +73,10 @@ public class EventUser extends Event {
         return answer;
     }
 
-    public AnswerBot getTypeAugury(Update update) {
+    public AnswerBot getCategoryPrediction(Update update) {
         String callbackData = update.getCallbackQuery().getData();
-        List<String> listTypeAugury = cardDayService.getTypesAugury();
+        SERVICE_TYPE service_type = stateDao.getServiceType(update.getCallbackQuery().getMessage().getChatId());
+        List<String> listTypeAugury = predictionManager.getAllCategory(service_type);
         List<CallbackButton> listBtn = new ArrayList<>();
         for(String type : listTypeAugury) {
             listBtn.add(new CallbackButton(type));
@@ -69,11 +86,11 @@ public class EventUser extends Event {
         return answer;
     }
 
-    public AnswerBot selectTypeAugury(Update update, TelegramBot bot) {
+    public AnswerBot selectTypeAugury(Update update) {
         String callbackData = update.getCallbackQuery().getData();
         Long chatId = update.getCallbackQuery().getMessage().getChatId();
         stateDao.setSelectAugury(callbackData, chatId);
-        Service service = cardDayService.getService(stateDao.getSelectService(chatId));
+        Service service = serviceManager.getService(stateDao.getSelectService(chatId));
         if(service.getPrice()>0) {
             List<CallbackButton> listBtn = new ArrayList<>();
             listBtn.add(new CallbackButton(BUTTONS.BTN_BACK));
@@ -85,7 +102,7 @@ public class EventUser extends Event {
             List<CallbackButton> listBtn = new ArrayList<>();
             listBtn.add(new CallbackButton(BUTTONS.BTN_BACK));
             AnswerBot answer = setAnswer(update, STATE_BOT.USER_FINISH, listBtn , 1);
-            cardDayService.startService(String.valueOf(chatId), service.getName(), bot);
+            cartomancyManager.start(chatId, service.getId());
             return answer;
         }
     }
@@ -127,7 +144,7 @@ public class EventUser extends Event {
         else if(state.equals(STATE_BOT.USER_FINISH))
             return getListService(update);
         else if(state.equals(STATE_BOT.USER_PAY))
-            return getTypeAugury(update);
+            return getCategoryPrediction(update);
         return null;
     }
 

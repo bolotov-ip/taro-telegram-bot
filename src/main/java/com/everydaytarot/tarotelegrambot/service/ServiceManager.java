@@ -1,10 +1,8 @@
-package com.everydaytarot.tarotelegrambot.service.excel;
+package com.everydaytarot.tarotelegrambot.service;
 
-import com.everydaytarot.tarotelegrambot.dao.AuguryResultDao;
+import com.everydaytarot.tarotelegrambot.config.SERVICE_TYPE;
 import com.everydaytarot.tarotelegrambot.dao.ServiceDao;
-import com.everydaytarot.tarotelegrambot.exception.ParseXlsxException;
-import com.everydaytarot.tarotelegrambot.model.service.Service;
-import com.everydaytarot.tarotelegrambot.telegram.TelegramBot;
+import com.everydaytarot.tarotelegrambot.model.Service;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.slf4j.Logger;
@@ -14,21 +12,26 @@ import org.springframework.stereotype.Component;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 @Component
-public class ExcelParser {
-
-    @Autowired
-    AuguryResultDao auguryResultDao;
+public class ServiceManager {
 
     @Autowired
     ServiceDao serviceDao;
 
-    private final Logger log = LoggerFactory.getLogger(TelegramBot.class);
+    private final Logger log = LoggerFactory.getLogger(ServiceManager.class);
 
-    public void parseXlsxService(String path) {
+    public Service getService(Long id) {
+        Optional<Service> service = serviceDao.findById(id);
+        return service.isPresent()?service.get():null;
+    }
+
+    public List<Service> getActiveServices(SERVICE_TYPE serviceType) {
+        return serviceDao.getActiveServices(serviceType.toString());
+    }
+
+    public void parseFileExcel(String path, SERVICE_TYPE service_type) {
         try {
             int COUNT_COLUMN = 6;
             int START_ROW = 2;
@@ -44,8 +47,6 @@ public class ExcelParser {
                 indexRow++;
                 if(indexRow < START_ROW)
                     continue;
-
-
                 Service service = new Service();
                 for(int i=0; i<COUNT_COLUMN; i++) {
                     String cellValue = "";
@@ -69,51 +70,22 @@ public class ExcelParser {
                     else if(i==5)
                         service.setPrice(Long.valueOf(cellValue));
                 }
+                service.setType(service_type.toString());
                 serviceList.add(service);
             }
-            for(Service service : serviceList) {
-                serviceDao.addService(service);
-            }
+            deactivationActiveService(service_type);
+            serviceDao.saveAllAndFlush(serviceList);
         }
         catch (Exception e) {
             log.error("ExcelParce error: " + e.getMessage());
         }
     }
 
-    public void parserXlsxAugury(String path){
-        try {
-            FileInputStream file = new FileInputStream(new File(path));
-            Workbook workbook = new XSSFWorkbook(file);
-
-            Sheet sheet = workbook.getSheetAt(0);
-
-            String augury = "";
-            String card = "";
-            for (Row row : sheet) {
-                String cellValue = row.getCell(0)!=null&&row.getCell(0).getCellType().equals(CellType.STRING)?row.getCell(0).getStringCellValue():"";
-
-                if(cellValue!=null && !cellValue.isEmpty()) {
-                    augury = row.getCell(0).getStringCellValue();
-                    auguryResultDao.saveTypeAugury(augury);
-                }
-
-                cellValue = row.getCell(1)!=null&&row.getCell(1).getCellType().equals(CellType.STRING)?row.getCell(1).getStringCellValue():"";
-
-                if(cellValue!=null && !cellValue.isEmpty()) {
-                    card = row.getCell(1).getStringCellValue();
-                    auguryResultDao.saveCard(card);
-                }
-
-                String result = row.getCell(1)!=null&&row.getCell(2).getCellType().equals(CellType.STRING)?row.getCell(2).getStringCellValue():"";
-                if(card == null || card.equals("") || augury == null || augury.equals("") ||result == null || result.equals(""))
-                    throw new ParseXlsxException();
-                auguryResultDao.saveAuguryResult(card, augury, result);
-            }
+    private void deactivationActiveService(SERVICE_TYPE serviceType) {
+        List<Service> services = getActiveServices(serviceType);
+        for(Service service : services) {
+            service.setState(Service.State.NONACTIVE.toString());
         }
-        catch (Exception e) {
-            log.error("ExcelParce error: " + e.getMessage());
-        }
-
+        serviceDao.saveAllAndFlush(services);
     }
-
 }

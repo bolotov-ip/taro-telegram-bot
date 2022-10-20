@@ -6,6 +6,7 @@ public class CallbackButton {
 
     String stringButton;
     BUTTONS enumButton;
+    String callbackData;
 
     public CallbackButton(String name) {
         stringButton = name;
@@ -16,7 +17,9 @@ public class CallbackButton {
     }
 
     public String getCallbackData() {
-        if(enumButton!=null)
+        if(callbackData!=null)
+            return callbackData;
+        else if(enumButton!=null)
             return enumButton.toString();
         else
             return stringButton;
@@ -27,5 +30,9 @@ public class CallbackButton {
             return enumButton.getText();
         else
             return stringButton;
+    }
+
+    public void setCallbackData(String callbackData) {
+        this.callbackData = callbackData;
     }
 }

@@ -1,10 +1,10 @@
 package com.everydaytarot.tarotelegrambot.telegram;
 
+import com.everydaytarot.tarotelegrambot.service.UserManager;
 import com.everydaytarot.tarotelegrambot.config.BotConfig;
-import com.everydaytarot.tarotelegrambot.dao.UserDao;
+import com.everydaytarot.tarotelegrambot.dao.PredictionDao;
 import com.everydaytarot.tarotelegrambot.telegram.domain.AnswerBot;
-import com.everydaytarot.tarotelegrambot.model.user.User;
-import com.everydaytarot.tarotelegrambot.repository.UserRepository;
+import com.everydaytarot.tarotelegrambot.model.User;
 import com.everydaytarot.tarotelegrambot.telegram.handler.AdminHandler;
 import com.everydaytarot.tarotelegrambot.telegram.handler.Handler;
 import com.everydaytarot.tarotelegrambot.telegram.handler.UserHandler;
@@ -14,11 +14,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.methods.AnswerPreCheckoutQuery;
-import org.telegram.telegrambots.meta.api.methods.send.SendInvoice;
-import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
-import org.telegram.telegrambots.meta.api.objects.payments.SuccessfulPayment;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
 @Component
@@ -33,7 +30,10 @@ public class TelegramBot extends TelegramLongPollingBot {
     private UserHandler userHandler;
 
     @Autowired
-    private UserDao userDao;
+    private UserManager userManager;
+
+    @Autowired
+    public PredictionDao predictionDao;
 
     @Autowired
     BotConfig config;
@@ -50,6 +50,7 @@ public class TelegramBot extends TelegramLongPollingBot {
 
     @Override
     public void onUpdateReceived(Update update) {
+
         if(update.hasPreCheckoutQuery()) {
             AnswerPreCheckoutQuery answerPreCheckoutQuery = new AnswerPreCheckoutQuery(update.getPreCheckoutQuery().getId(), true);
             try {
@@ -68,9 +69,9 @@ public class TelegramBot extends TelegramLongPollingBot {
         userHandler.setBot(this);
         userHandler.setUpdate(update);
 
-        User user = userDao.getUser(msg);
+        User user = userManager.getUser(msg);
         if(user==null) {
-            user = userDao.registerUser(msg);
+            user = userManager.registerUser(msg);
         }
         Handler handler = user.isAdmin()?adminHandler:userHandler;
         AnswerBot answer = handler.run();
