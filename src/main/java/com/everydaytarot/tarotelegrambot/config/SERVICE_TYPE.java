@@ -1,7 +1,6 @@
 package com.everydaytarot.tarotelegrambot.config;
 
 public enum SERVICE_TYPE {
-    TIP_DAY("Совет дня"),
     CARTOMANCY("Индивидуальная карта"),
     CARD_OF_THE_DAY("Карта дня"),
     NUMEROLOGY("Нумерология"),

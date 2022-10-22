@@ -1,8 +1,8 @@
 package com.everydaytarot.tarotelegrambot.service;
 
 import com.everydaytarot.tarotelegrambot.config.SERVICE_TYPE;
-import com.everydaytarot.tarotelegrambot.dao.PredictionDao;
-import com.everydaytarot.tarotelegrambot.model.Prediction;
+import com.everydaytarot.tarotelegrambot.dao.PredictionCartomancyDao;
+import com.everydaytarot.tarotelegrambot.model.PredictionCartomancy;
 import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
@@ -21,53 +21,52 @@ import java.util.*;
 public class PredictionManager {
 
     @Autowired
-    private PredictionDao predictionDao;
+    private PredictionCartomancyDao predictionCartomancyDao;
 
     private final Logger log = LoggerFactory.getLogger(PredictionManager.class);
 
-    private void savePrediction(String card, String category, String text, SERVICE_TYPE service_type) {
-        Optional<Prediction> auguryResult =  predictionDao.findPrediction(card, category);
-        Prediction newPrediction;
+    private void savePrediction(String card, String category, String text) {
+        Optional<PredictionCartomancy> auguryResult =  predictionCartomancyDao.findPrediction(card, category);
+        PredictionCartomancy newPredictionCartomancy;
         if(auguryResult.isEmpty())
-            newPrediction = new Prediction();
+            newPredictionCartomancy = new PredictionCartomancy();
         else
-            newPrediction = auguryResult.get();
-        newPrediction.setCard(card);
-        newPrediction.setCategory(category);
-        newPrediction.setText(text);
-        newPrediction.setTypeService(service_type.toString());
-        predictionDao.save(newPrediction);
+            newPredictionCartomancy = auguryResult.get();
+        newPredictionCartomancy.setCard(card);
+        newPredictionCartomancy.setCategory(category);
+        newPredictionCartomancy.setText(text);
+        predictionCartomancyDao.save(newPredictionCartomancy);
     }
 
     public List<String> getCardNames(){
-        List<Prediction> predictions = predictionDao.getCards();
+        List<PredictionCartomancy> predictionCartomancies = predictionCartomancyDao.getCards();
         Set<String> cards = new HashSet<>();
-        for(Prediction prediction : predictions)
-            cards.add(prediction.getCategory());
+        for(PredictionCartomancy predictionCartomancy : predictionCartomancies)
+            cards.add(predictionCartomancy.getCategory());
         return new ArrayList<>(cards);
     }
 
     public List<String> getAllCategory(SERVICE_TYPE service_type) {
-        List<Prediction> predictions = predictionDao.getCategories();
+        List<PredictionCartomancy> predictionCartomancies = predictionCartomancyDao.getCategories();
         Set<String> categories = new HashSet<>();
-        for(Prediction prediction : predictions)
-            categories.add(prediction.getCategory());
+        for(PredictionCartomancy predictionCartomancy : predictionCartomancies)
+            categories.add(predictionCartomancy.getCategory());
         return new ArrayList<>(categories);
     }
 
     public void clearAuguryTables() {
-        predictionDao.deleteAll();
+        predictionCartomancyDao.deleteAll();
     }
 
     public String getAugury(String card, String category) {
-        Optional<Prediction> prediction =  predictionDao.findPrediction(card, category);
+        Optional<PredictionCartomancy> prediction =  predictionCartomancyDao.findPrediction(card, category);
         if(prediction.isPresent())
             return prediction.get().getText();
         else
             return "";
     }
 
-    public void parseFileExcel(String path, SERVICE_TYPE service_type) {
+    public void parseFileExcel(String path) {
         try {
             FileInputStream file = new FileInputStream(new File(path));
             Workbook workbook = new XSSFWorkbook(file);
@@ -92,7 +91,7 @@ public class PredictionManager {
                 String text = row.getCell(1)!=null&&row.getCell(2).getCellType().equals(CellType.STRING)?row.getCell(2).getStringCellValue():"";
                 if(text == null || text.equals(""))
                     continue;
-                this.savePrediction(card, category, text, service_type);
+                this.savePrediction(card, category, text);
             }
         }
         catch (Exception e) {

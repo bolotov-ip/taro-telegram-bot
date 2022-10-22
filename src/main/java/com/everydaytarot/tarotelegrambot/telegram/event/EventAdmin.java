@@ -154,7 +154,7 @@ public class EventAdmin extends Event {
                 @Override
                 public void run() {
                     if(state.equals(STATE_BOT.INPUT_XLSX_AUGURY)) {
-                        predictionManager.parseFileExcel(path, serviceType);
+                        predictionManager.parseFileExcel(path);
                     } else if (state.equals(STATE_BOT.INPUT_XLSX_SERVICE)) {
                         serviceManager.parseFileExcel(path, serviceType);
                     }

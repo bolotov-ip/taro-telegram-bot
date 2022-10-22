@@ -12,12 +12,12 @@ import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import org.telegram.telegrambots.updatesreceivers.DefaultBotSession;
 
 @Component
-public class BotInizitalzer {
+public class BotInitialyzer {
 
     @Autowired
     TelegramBot bot;
 
-    private final Logger log = LoggerFactory.getLogger(BotInizitalzer.class);
+    private final Logger log = LoggerFactory.getLogger(BotInitialyzer.class);
 
     @EventListener({ContextRefreshedEvent.class})
     public void init() throws TelegramApiException {

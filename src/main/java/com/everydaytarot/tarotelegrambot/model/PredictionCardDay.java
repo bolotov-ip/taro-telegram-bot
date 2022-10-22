@@ -2,9 +2,8 @@ package com.everydaytarot.tarotelegrambot.model;
 
 import javax.persistence.*;
 
-@Entity(name = "predictions")
-public class Prediction {
-
+@Entity(name = "predictions_card_day")
+public class PredictionCardDay {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
@@ -13,14 +12,9 @@ public class Prediction {
     @Column(nullable = false, name = "card")
     String card;
 
-    @Column(nullable = false, name = "category")
-    String category;
-
     @Column(name = "text")
     String text;
 
-    @Column(name = "type_service")
-    String typeService;
 
     public Long getId() {
         return id;
@@ -38,14 +32,6 @@ public class Prediction {
         this.card = card;
     }
 
-    public String getCategory() {
-        return category;
-    }
-
-    public void setCategory(String category) {
-        this.category = category;
-    }
-
     public String getText() {
         return text;
     }
@@ -54,11 +40,4 @@ public class Prediction {
         this.text = text;
     }
 
-    public String getTypeService() {
-        return typeService;
-    }
-
-    public void setTypeService(String typeService) {
-        this.typeService = typeService;
-    }
 }
