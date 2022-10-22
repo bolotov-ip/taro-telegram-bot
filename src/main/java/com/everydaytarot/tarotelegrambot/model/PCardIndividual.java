@@ -2,8 +2,8 @@ package com.everydaytarot.tarotelegrambot.model;
 
 import javax.persistence.*;
 
-@Entity(name = "predictions_cartomancy")
-public class PCartomancy {
+@Entity(name = "predictions_card_individual")
+public class PCardIndividual {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

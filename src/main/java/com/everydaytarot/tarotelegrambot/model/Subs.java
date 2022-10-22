@@ -33,15 +33,15 @@ public class Subs {
     @Column(name="state")
     String state = State.ACTIVE.toString();
 
-    @Column(name="type")
-    String type;
+    @Column(name="service_type")
+    String serviceType;
 
-    public String getType() {
-        return type;
+    public String getServiceType() {
+        return serviceType;
     }
 
-    public void setType(String type) {
-        this.type = type;
+    public void setServiceType(String serviceType) {
+        this.serviceType = serviceType;
     }
 
     public Long getId() {

@@ -100,6 +100,6 @@ public interface StateDao extends JpaRepository<StateBot, Long> {
         if(state.isPresent())
             return SERVICE_TYPE.valueOf(state.get().getSelectTypeService());
         else
-            return SERVICE_TYPE.CARTOMANCY;
+            return SERVICE_TYPE.CARD_INDIVIDUAL;
     }
 }

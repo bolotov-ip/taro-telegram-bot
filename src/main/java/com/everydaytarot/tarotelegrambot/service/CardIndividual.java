@@ -14,7 +14,7 @@ import org.springframework.stereotype.Component;
 import java.sql.Date;
 
 @Component
-public class Cartomancy {
+public class CardIndividual {
 
 
     @Autowired
@@ -31,11 +31,10 @@ public class Cartomancy {
 
     private TelegramBot bot;
 
-    private final Logger log = LoggerFactory.getLogger(Cartomancy.class);
+    private final Logger log = LoggerFactory.getLogger(CardIndividual.class);
 
-    public void start(Long chatId, Long serviceId) {
-        Order newOrder = createOrder(chatId, serviceId);
-        Query query = createQuestion(newOrder);
+    public SERVICE_STATE start(Order order) {
+        return SERVICE_STATE.SUCCESS;
     }
 
     private Order createOrder(Long chatId, Long serviceId) {

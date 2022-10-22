@@ -1,9 +1,9 @@
 package com.everydaytarot.tarotelegrambot.service;
 
 import com.everydaytarot.tarotelegrambot.config.SERVICE_TYPE;
-import com.everydaytarot.tarotelegrambot.dao.PCartomancyDao;
+import com.everydaytarot.tarotelegrambot.dao.PCardIndividualDao;
 import com.everydaytarot.tarotelegrambot.dao.SubsDao;
-import com.everydaytarot.tarotelegrambot.model.PCartomancy;
+import com.everydaytarot.tarotelegrambot.model.PCardIndividual;
 import com.everydaytarot.tarotelegrambot.model.Subs;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
@@ -20,7 +20,7 @@ import java.util.*;
 public class SettingsManager {
 
     @Autowired
-    private PCartomancyDao pCartomancyDao;
+    private PCardIndividualDao pCardIndividualDao;
 
     @Autowired
     private SubsDao subsDao;
@@ -28,40 +28,40 @@ public class SettingsManager {
     private final Logger log = LoggerFactory.getLogger(SettingsManager.class);
 
     private void savePrediction(String card, String category, String text) {
-        Optional<PCartomancy> auguryResult =  pCartomancyDao.findPrediction(card, category);
-        PCartomancy newPCartomancy;
+        Optional<PCardIndividual> auguryResult =  pCardIndividualDao.findPrediction(card, category);
+        PCardIndividual newPCardIndividual;
         if(auguryResult.isEmpty())
-            newPCartomancy = new PCartomancy();
+            newPCardIndividual = new PCardIndividual();
         else
-            newPCartomancy = auguryResult.get();
-        newPCartomancy.setCard(card);
-        newPCartomancy.setCategory(category);
-        newPCartomancy.setText(text);
-        pCartomancyDao.save(newPCartomancy);
+            newPCardIndividual = auguryResult.get();
+        newPCardIndividual.setCard(card);
+        newPCardIndividual.setCategory(category);
+        newPCardIndividual.setText(text);
+        pCardIndividualDao.save(newPCardIndividual);
     }
 
     public List<String> getCardNames(){
-        List<PCartomancy> predictionCartomancies = pCartomancyDao.getCards();
+        List<PCardIndividual> predictionCartomancies = pCardIndividualDao.getCards();
         Set<String> cards = new HashSet<>();
-        for(PCartomancy pCartomancy : predictionCartomancies)
-            cards.add(pCartomancy.getCategory());
+        for(PCardIndividual pCardIndividual : predictionCartomancies)
+            cards.add(pCardIndividual.getCategory());
         return new ArrayList<>(cards);
     }
 
     public List<String> getAllCategory(SERVICE_TYPE service_type) {
-        List<PCartomancy> predictionCartomancies = pCartomancyDao.getCategories();
+        List<PCardIndividual> predictionCartomancies = pCardIndividualDao.getCategories();
         Set<String> categories = new HashSet<>();
-        for(PCartomancy pCartomancy : predictionCartomancies)
-            categories.add(pCartomancy.getCategory());
+        for(PCardIndividual pCardIndividual : predictionCartomancies)
+            categories.add(pCardIndividual.getCategory());
         return new ArrayList<>(categories);
     }
 
     public void clearAuguryTables() {
-        pCartomancyDao.deleteAll();
+        pCardIndividualDao.deleteAll();
     }
 
     public String getAugury(String card, String category) {
-        Optional<PCartomancy> prediction =  pCartomancyDao.findPrediction(card, category);
+        Optional<PCardIndividual> prediction =  pCardIndividualDao.findPrediction(card, category);
         if(prediction.isPresent())
             return prediction.get().getText();
         else
@@ -140,7 +140,7 @@ public class SettingsManager {
                     else if(i==5)
                         subs.setPrice(Long.valueOf(cellValue));
                 }
-                subs.setType(service_type.toString());
+                subs.setServiceType(service_type.toString());
                 subsList.add(subs);
             }
             subsDao.deactivationActiveService(service_type);

@@ -5,6 +5,6 @@ import com.everydaytarot.tarotelegrambot.model.Subs;
 
 public interface ServiceManager {
 
-    public void start(SERVICE_TYPE serviceType, Subs subs);
+    public SERVICE_STATE start(Long chatId, Subs subs);
 
 }

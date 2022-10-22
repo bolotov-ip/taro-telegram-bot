@@ -3,9 +3,10 @@ package com.everydaytarot.tarotelegrambot.telegram.event;
 
 import com.everydaytarot.tarotelegrambot.config.SERVICE_TYPE;
 import com.everydaytarot.tarotelegrambot.dao.SubsDao;
+import com.everydaytarot.tarotelegrambot.service.ServiceManager;
 import com.everydaytarot.tarotelegrambot.service.SettingsManager;
 import com.everydaytarot.tarotelegrambot.model.Subs;
-import com.everydaytarot.tarotelegrambot.service.Cartomancy;
+import com.everydaytarot.tarotelegrambot.service.CardIndividual;
 import com.everydaytarot.tarotelegrambot.telegram.constant.BUTTONS;
 import com.everydaytarot.tarotelegrambot.telegram.constant.STATE_BOT;
 import com.everydaytarot.tarotelegrambot.telegram.domain.AnswerBot;
@@ -25,13 +26,13 @@ import java.util.List;
 public class EventUser extends Event {
 
     @Autowired
-    Cartomancy cartomancy;
-
-    @Autowired
     SubsDao subsDao;
 
     @Autowired
     SettingsManager settingsManager;
+
+    @Autowired
+    ServiceManager serviceManager;
 
 
     public AnswerBot start(Update update) {
@@ -101,7 +102,7 @@ public class EventUser extends Event {
             List<CallbackButton> listBtn = new ArrayList<>();
             listBtn.add(new CallbackButton(BUTTONS.BTN_BACK));
             AnswerBot answer = setAnswer(update, STATE_BOT.USER_FINISH, listBtn , 1);
-            cartomancy.start(chatId, subs.getId());
+           // serviceManager.start(chatId, subs);
             return answer;
         }
     }
