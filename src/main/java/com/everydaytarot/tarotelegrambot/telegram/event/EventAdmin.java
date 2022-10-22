@@ -1,8 +1,7 @@
 package com.everydaytarot.tarotelegrambot.telegram.event;
 
 import com.everydaytarot.tarotelegrambot.config.SERVICE_TYPE;
-import com.everydaytarot.tarotelegrambot.service.PredictionManager;
-import com.everydaytarot.tarotelegrambot.service.ServiceManager;
+import com.everydaytarot.tarotelegrambot.service.SettingsManager;
 import com.everydaytarot.tarotelegrambot.telegram.constant.BUTTONS;
 import com.everydaytarot.tarotelegrambot.telegram.domain.AnswerBot;
 import com.everydaytarot.tarotelegrambot.telegram.constant.STATE_BOT;
@@ -11,7 +10,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.meta.api.methods.send.SendDocument;
 import org.telegram.telegrambots.meta.api.objects.InputFile;
 import org.telegram.telegrambots.meta.api.objects.Message;
@@ -29,10 +27,7 @@ import java.util.List;
 public class EventAdmin extends Event {
 
     @Autowired
-    PredictionManager predictionManager;
-
-    @Autowired
-    ServiceManager serviceManager;
+    SettingsManager settingsManager;
 
     private final Logger log = LoggerFactory.getLogger(EventAdmin.class);
 
@@ -96,7 +91,7 @@ public class EventAdmin extends Event {
         if(state.equals(STATE_BOT.INPUT_XLSX_AUGURY))
             catalog = botConfig.getCatalogAugury();
         else if(state.equals(STATE_BOT.INPUT_XLSX_SERVICE))
-            catalog = botConfig.getCatalogService();
+            catalog = botConfig.getCatalogSubs();
         File file = null;
         new File(catalog).mkdirs();
         Path path= Paths.get(catalog);
@@ -141,7 +136,7 @@ public class EventAdmin extends Event {
             catalog  = botConfig.getCatalogAugury();
         }
         else if(state.equals(STATE_BOT.INPUT_XLSX_SERVICE)) {
-            catalog = botConfig.getCatalogService();
+            catalog = botConfig.getCatalogSubs();
         }
         SERVICE_TYPE serviceType = stateDao.getServiceType(update.getCallbackQuery().getMessage().getChatId());
         deleteFile(catalog);
@@ -154,9 +149,9 @@ public class EventAdmin extends Event {
                 @Override
                 public void run() {
                     if(state.equals(STATE_BOT.INPUT_XLSX_AUGURY)) {
-                        predictionManager.parseFileExcel(path);
+                        settingsManager.parseFileExcel(path);
                     } else if (state.equals(STATE_BOT.INPUT_XLSX_SERVICE)) {
-                        serviceManager.parseFileExcel(path, serviceType);
+                        settingsManager.parseFileExcel(path, serviceType);
                     }
 
                 }

@@ -3,7 +3,7 @@ package com.everydaytarot.tarotelegrambot.model;
 import javax.persistence.*;
 
 @Entity(name = "service")
-public class Service {
+public class Subs {
 
     public enum State {ACTIVE, NONACTIVE}
 

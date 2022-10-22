@@ -14,14 +14,14 @@ import org.springframework.stereotype.Component;
 import java.sql.Date;
 
 @Component
-public class CartomancyManager {
+public class Cartomancy {
 
 
     @Autowired
     private OrderDao orderDao;
 
     @Autowired
-    private PredictionManager predictionManager;
+    private SettingsManager settingsManager;
 
     @Autowired
     private StateDao stateDao;
@@ -31,7 +31,7 @@ public class CartomancyManager {
 
     private TelegramBot bot;
 
-    private final Logger log = LoggerFactory.getLogger(CartomancyManager.class);
+    private final Logger log = LoggerFactory.getLogger(Cartomancy.class);
 
     public void start(Long chatId, Long serviceId) {
         Order newOrder = createOrder(chatId, serviceId);

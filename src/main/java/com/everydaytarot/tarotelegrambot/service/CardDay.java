@@ -1,4 +1,4 @@
 package com.everydaytarot.tarotelegrambot.service;
 
-public class TipDayManager {
+public class CardDay {
 }

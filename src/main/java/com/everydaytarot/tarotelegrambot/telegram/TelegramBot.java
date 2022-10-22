@@ -2,7 +2,7 @@ package com.everydaytarot.tarotelegrambot.telegram;
 
 import com.everydaytarot.tarotelegrambot.service.UserManager;
 import com.everydaytarot.tarotelegrambot.config.BotConfig;
-import com.everydaytarot.tarotelegrambot.dao.PredictionCartomancyDao;
+import com.everydaytarot.tarotelegrambot.dao.PCartomancyDao;
 import com.everydaytarot.tarotelegrambot.telegram.domain.AnswerBot;
 import com.everydaytarot.tarotelegrambot.model.User;
 import com.everydaytarot.tarotelegrambot.telegram.handler.AdminHandler;
@@ -33,7 +33,7 @@ public class TelegramBot extends TelegramLongPollingBot {
     private UserManager userManager;
 
     @Autowired
-    public PredictionCartomancyDao predictionCartomancyDao;
+    public PCartomancyDao pCartomancyDao;
 
     @Autowired
     BotConfig config;

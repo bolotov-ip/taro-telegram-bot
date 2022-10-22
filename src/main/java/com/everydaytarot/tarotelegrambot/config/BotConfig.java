@@ -26,15 +26,15 @@ public class BotConfig {
     @Value("${bot.catalog.augury}")
     private String catalogAugury;
 
-    @Value("${bot.catalog.service}")
-    private String catalogService;
+    @Value("${bot.catalog.subs}")
+    private String catalogSubs;
 
-    public String getCatalogService() {
-        return catalogService;
+    public String getCatalogSubs() {
+        return catalogSubs;
     }
 
-    public void setCatalogService(String catalogService) {
-        this.catalogService = catalogService;
+    public void setCatalogSubs(String catalogSubs) {
+        this.catalogSubs = catalogSubs;
     }
 
     public String getCatalogCard() {
