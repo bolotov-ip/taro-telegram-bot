@@ -16,7 +16,7 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 @Component
 public class AdminHandler implements Handler{
 
-
+    @Autowired
     private EventAdmin eventAdmin;
 
     @Autowired
@@ -88,8 +88,8 @@ public class AdminHandler implements Handler{
         }
         else if(update.getMessage().hasDocument()) {
             STATE_BOT state = stateDao.getState(update.getMessage().getChatId());
-            if(state.equals(STATE_BOT.INPUT_XLSX_AUGURY) || state.equals(STATE_BOT.INPUT_XLSX_SERVICE)) {
-                return eventAdmin.getFile(update, state);
+            if(state.equals(STATE_BOT.INPUT_XLSX_PREDICTION) || state.equals(STATE_BOT.INPUT_XLSX_SERVICE)) {
+                return eventAdmin.updateSettings(update, state);
             }
         }
         else {

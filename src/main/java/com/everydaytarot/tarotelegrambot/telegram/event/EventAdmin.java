@@ -82,13 +82,13 @@ public class EventAdmin extends Event {
         List<CallbackButton> listBtn = new ArrayList<>();
         listBtn.add(new CallbackButton(BUTTONS.BTN_CANCEL));
         listBtn.add(new CallbackButton(BUTTONS.BTN_ADMIN_DOWNOLAD_FILE));
-        return setAnswer(update, STATE_BOT.INPUT_XLSX_AUGURY, listBtn, 1);
+        return setAnswer(update, STATE_BOT.INPUT_XLSX_PREDICTION, listBtn, 1);
     }
 
 
     public AnswerBot pressSendFile(Update update, STATE_BOT state) {
         String catalog = "";
-        if(state.equals(STATE_BOT.INPUT_XLSX_AUGURY))
+        if(state.equals(STATE_BOT.INPUT_XLSX_PREDICTION))
             catalog = botConfig.getCatalogAugury();
         else if(state.equals(STATE_BOT.INPUT_XLSX_SERVICE))
             catalog = botConfig.getCatalogSubs();
@@ -115,7 +115,7 @@ public class EventAdmin extends Event {
         STATE_BOT state = stateDao.getState(msg.getChatId());
         if(state.equals(STATE_BOT.ADMIN_MENU))
             return start(update);
-        else if(state.equals(STATE_BOT.INPUT_XLSX_AUGURY) || state.equals(STATE_BOT.INPUT_XLSX_SERVICE))
+        else if(state.equals(STATE_BOT.INPUT_XLSX_PREDICTION) || state.equals(STATE_BOT.INPUT_XLSX_SERVICE))
             return pressMenu(update);
         else if(state.equals(STATE_BOT.ADMIN_ADD_FILE_MENU))
             return getTypeService(update);
@@ -124,7 +124,7 @@ public class EventAdmin extends Event {
         return null;
     }
 
-    public AnswerBot getFile(Update update, STATE_BOT state) {
+    public AnswerBot updateSettings(Update update, STATE_BOT state) {
 
         AnswerBot answer = null;
 
@@ -132,7 +132,7 @@ public class EventAdmin extends Event {
         String fileId = update.getMessage().getDocument().getFileId();
 
         String catalog = "";
-        if(state.equals(STATE_BOT.INPUT_XLSX_AUGURY)) {
+        if(state.equals(STATE_BOT.INPUT_XLSX_PREDICTION)) {
             catalog  = botConfig.getCatalogAugury();
         }
         else if(state.equals(STATE_BOT.INPUT_XLSX_SERVICE)) {
@@ -145,19 +145,17 @@ public class EventAdmin extends Event {
             List<CallbackButton> listBtn = new ArrayList<>();
             listBtn.add(new CallbackButton(BUTTONS.BTN_BACK_TO_START));
             answer = setAnswer(update, STATE_BOT.LOAD, listBtn, 2);
-            Thread th = new Thread(new Runnable() {
+            new Thread(new Runnable() {
                 @Override
                 public void run() {
-                    if(state.equals(STATE_BOT.INPUT_XLSX_AUGURY)) {
-                        settingsManager.parseFileExcel(path);
+                    if(state.equals(STATE_BOT.INPUT_XLSX_PREDICTION)) {
+                        settingsManager.updatePrediction(serviceType, path);
                     } else if (state.equals(STATE_BOT.INPUT_XLSX_SERVICE)) {
-                        settingsManager.parseFileExcel(path, serviceType);
+                        settingsManager.updateSubs(serviceType, path);
                     }
 
                 }
-            });
-            th.start();
-
+            }).start();
         }
         catch (IOException e) {
             log.error("File download error: " + e.getMessage());

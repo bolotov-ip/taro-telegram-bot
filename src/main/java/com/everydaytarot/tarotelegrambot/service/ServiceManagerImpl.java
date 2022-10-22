@@ -22,15 +22,20 @@ public class ServiceManagerImpl implements ServiceManager {
             return state;
 
         Order newOrder = createOrder();
-        switch (SERVICE_TYPE.valueOf(subs.getServiceType())) {
-            case CARD_INDIVIDUAL:
-                state = cardIndividual.start(newOrder);
-                break;
-            case CARD_OF_THE_DAY:
-                state = cardDay.start(newOrder);
-        }
-
+        ServiceProvider service = getService(SERVICE_TYPE.valueOf(subs.getType()));
+        service.start(newOrder);
         return state;
+    }
+
+    @Override
+    public ServiceProvider getService(SERVICE_TYPE serviceType) {
+        switch (serviceType) {
+            case CARD_INDIVIDUAL:
+                return cardIndividual;
+            case CARD_OF_THE_DAY:
+                return cardDay;
+        }
+        return null;
     }
 
     public Order createOrder() {

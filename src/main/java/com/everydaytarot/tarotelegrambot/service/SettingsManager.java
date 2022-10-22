@@ -1,8 +1,10 @@
 package com.everydaytarot.tarotelegrambot.service;
 
 import com.everydaytarot.tarotelegrambot.config.SERVICE_TYPE;
+import com.everydaytarot.tarotelegrambot.dao.PCardDayDao;
 import com.everydaytarot.tarotelegrambot.dao.PCardIndividualDao;
 import com.everydaytarot.tarotelegrambot.dao.SubsDao;
+import com.everydaytarot.tarotelegrambot.model.PCardDay;
 import com.everydaytarot.tarotelegrambot.model.PCardIndividual;
 import com.everydaytarot.tarotelegrambot.model.Subs;
 import org.apache.poi.ss.usermodel.*;
@@ -20,6 +22,9 @@ import java.util.*;
 public class SettingsManager {
 
     @Autowired
+    private PCardDayDao pCardDayDao;
+
+    @Autowired
     private PCardIndividualDao pCardIndividualDao;
 
     @Autowired
@@ -27,127 +32,63 @@ public class SettingsManager {
 
     private final Logger log = LoggerFactory.getLogger(SettingsManager.class);
 
-    private void savePrediction(String card, String category, String text) {
-        Optional<PCardIndividual> auguryResult =  pCardIndividualDao.findPrediction(card, category);
-        PCardIndividual newPCardIndividual;
-        if(auguryResult.isEmpty())
-            newPCardIndividual = new PCardIndividual();
-        else
-            newPCardIndividual = auguryResult.get();
-        newPCardIndividual.setCard(card);
-        newPCardIndividual.setCategory(category);
-        newPCardIndividual.setText(text);
-        pCardIndividualDao.save(newPCardIndividual);
-    }
-
-    public List<String> getCardNames(){
-        List<PCardIndividual> predictionCartomancies = pCardIndividualDao.getCards();
-        Set<String> cards = new HashSet<>();
-        for(PCardIndividual pCardIndividual : predictionCartomancies)
-            cards.add(pCardIndividual.getCategory());
-        return new ArrayList<>(cards);
-    }
-
-    public List<String> getAllCategory(SERVICE_TYPE service_type) {
-        List<PCardIndividual> predictionCartomancies = pCardIndividualDao.getCategories();
-        Set<String> categories = new HashSet<>();
-        for(PCardIndividual pCardIndividual : predictionCartomancies)
-            categories.add(pCardIndividual.getCategory());
-        return new ArrayList<>(categories);
-    }
-
-    public void clearAuguryTables() {
-        pCardIndividualDao.deleteAll();
-    }
-
-    public String getAugury(String card, String category) {
-        Optional<PCardIndividual> prediction =  pCardIndividualDao.findPrediction(card, category);
-        if(prediction.isPresent())
-            return prediction.get().getText();
-        else
-            return "";
-    }
-
-    public void parseFileExcel(String path) {
-        try {
-            FileInputStream file = new FileInputStream(new File(path));
-            Workbook workbook = new XSSFWorkbook(file);
-
-            Sheet sheet = workbook.getSheetAt(0);
-
-            String category = "";
-            String card = "";
-            for (Row row : sheet) {
-                String cellValue = row.getCell(0)!=null&&row.getCell(0).getCellType().equals(CellType.STRING)?row.getCell(0).getStringCellValue():"";
-
-                if(cellValue!=null && !cellValue.isEmpty()) {
-                    category = row.getCell(0).getStringCellValue();
-                }
-
-                cellValue = row.getCell(1)!=null&&row.getCell(1).getCellType().equals(CellType.STRING)?row.getCell(1).getStringCellValue():"";
-
-                if(cellValue!=null && !cellValue.isEmpty()) {
-                    card = row.getCell(1).getStringCellValue();
-                }
-
-                String text = row.getCell(1)!=null&&row.getCell(2).getCellType().equals(CellType.STRING)?row.getCell(2).getStringCellValue():"";
-                if(text == null || text.equals(""))
-                    continue;
-                this.savePrediction(card, category, text);
-            }
+    public boolean updatePrediction(SERVICE_TYPE serviceType, String pathFile) {
+        List<String[]> listData = parseExcel(serviceType, pathFile);
+        switch (serviceType) {
+            case CARD_OF_THE_DAY:
+                pCardDayDao.deleteAll();
+                pCardDayDao.addPCardDay(listData);
+                break;
+            case CARD_INDIVIDUAL:
+                pCardIndividualDao.deleteAll();
+                pCardIndividualDao.addPCardIndividual(listData);
+                break;
         }
-        catch (Exception e) {
-            log.error("ExcelParce error: " + e.getMessage());
-        }
+        return true;
     }
 
-    public void parseFileExcel(String path, SERVICE_TYPE service_type) {
+    public boolean updateSubs(SERVICE_TYPE serviceType, String pathFile) {
+        List<String[]> listData = parseExcel(serviceType, pathFile);
+        subsDao.deactivationActiveSubs(serviceType);
+        subsDao.addSubs(listData);
+        return true;
+    }
+
+
+    private List<String[]> parseExcel(SERVICE_TYPE serviceType,String pathFile) {
         try {
-            int COUNT_COLUMN = 6;
-            int START_ROW = 2;
-            List<Subs> subsList = new ArrayList<>();
-
-            FileInputStream file = new FileInputStream(new File(path));
-            Workbook workbook = new XSSFWorkbook(file);
-
+            List<String[]> result = new ArrayList<>();
+            Workbook workbook = new XSSFWorkbook(new FileInputStream(new File(pathFile)));
             Sheet sheet = workbook.getSheetAt(0);
-
-            int indexRow = 0;
+            int rowSize = getCountColumn(sheet);
+            int rowNum = 0;
             for (Row row : sheet) {
-                indexRow++;
-                if(indexRow < START_ROW)
-                    continue;
-                Subs subs = new Subs();
-                for(int i=0; i<COUNT_COLUMN; i++) {
+                String[] rowData = new String[rowSize];
+                for(int i=0; i<rowData.length; i++) {
+                    if(i==rowData.length-1)
+                        rowData[i] = serviceType.toString();
                     String cellValue = "";
                     Cell cell = row.getCell(i);
                     if(cell.getCellType()!=null && cell.getCellType().equals(CellType.NUMERIC))
                         cellValue = String.valueOf(((Double)cell.getNumericCellValue()).intValue());
                     else if(cell.getCellType()!=null && cell.getCellType().equals(CellType.STRING))
                         cellValue = cell.getStringCellValue();
-                    if(cellValue.equals(""))
-                        continue;
-                    if(i==0)
-                        subs.setName(cellValue);
-                    else if(i==1)
-                        subs.setDescription(cellValue);
-                    else if(i==2)
-                        subs.setCountDay(Integer.valueOf(cellValue));
-                    else if(i==3)
-                        subs.setCountUse(Integer.valueOf(cellValue));
-                    else if(i==4)
-                        subs.setMaxUse(Integer.valueOf(cellValue));
-                    else if(i==5)
-                        subs.setPrice(Long.valueOf(cellValue));
+                    rowData[i] = cellValue;
+                    if(result.size()>1 && (rowData[i]==null || rowData[i].isEmpty()))
+                        rowData[i] = result.get(rowNum-1)[i];
                 }
-                subs.setServiceType(service_type.toString());
-                subsList.add(subs);
+                result.add(rowData);
+                rowNum++;
             }
-            subsDao.deactivationActiveService(service_type);
-            subsDao.saveAllAndFlush(subsList);
         }
         catch (Exception e) {
-            log.error("ExcelParce error: " + e.getMessage());
+            log.error(e.getMessage());
         }
+        return null;
     }
+
+    private int getCountColumn(Sheet sheet) {
+        return sheet.getRow(0).getLastCellNum() + 1;
+    }
+
 }

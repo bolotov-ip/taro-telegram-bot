@@ -26,6 +26,9 @@ import java.util.List;
 public class EventUser extends Event {
 
     @Autowired
+    CardIndividual cardIndividual;
+
+    @Autowired
     SubsDao subsDao;
 
     @Autowired
@@ -49,7 +52,7 @@ public class EventUser extends Event {
     public AnswerBot getListService(Update update) {
         List<CallbackButton> listBtn = new ArrayList<>();
         SERVICE_TYPE serviceType = stateDao.getServiceType(update.getCallbackQuery().getMessage().getChatId());
-        List<Subs> activeSubs = subsDao.getActiveServices(serviceType);
+        List<Subs> activeSubs = subsDao.getActiveSubs(serviceType);
         for(Subs subs : activeSubs) {
             CallbackButton btn = new CallbackButton(subs.getName());
             btn.setCallbackData(subs.getId().toString());
@@ -63,7 +66,7 @@ public class EventUser extends Event {
         String callbackData = update.getCallbackQuery().getData();
         Long chatId = update.getCallbackQuery().getMessage().getChatId();
         stateDao.setSelectService(Long.valueOf(callbackData), chatId);
-        Subs subs = subsDao.getService(chatId);
+        Subs subs = subsDao.getSubs(chatId);
         String description = subs.getDescription();
         List<CallbackButton> listBtn = new ArrayList<>();
         listBtn.add(new CallbackButton(BUTTONS.BTN_BACK));
@@ -76,7 +79,7 @@ public class EventUser extends Event {
     public AnswerBot getCategoryPrediction(Update update) {
         String callbackData = update.getCallbackQuery().getData();
         SERVICE_TYPE service_type = stateDao.getServiceType(update.getCallbackQuery().getMessage().getChatId());
-        List<String> listTypeAugury = settingsManager.getAllCategory(service_type);
+        List<String> listTypeAugury = serviceManager.getService(service_type).getCategory();
         List<CallbackButton> listBtn = new ArrayList<>();
         for(String type : listTypeAugury) {
             listBtn.add(new CallbackButton(type));
@@ -90,7 +93,7 @@ public class EventUser extends Event {
         String callbackData = update.getCallbackQuery().getData();
         Long chatId = update.getCallbackQuery().getMessage().getChatId();
         stateDao.setSelectAugury(callbackData, chatId);
-        Subs subs = subsDao.getService(stateDao.getSelectService(chatId));
+        Subs subs = subsDao.getSubs(stateDao.getSelectService(chatId));
         if(subs.getPrice()>0) {
             List<CallbackButton> listBtn = new ArrayList<>();
             listBtn.add(new CallbackButton(BUTTONS.BTN_BACK));

@@ -6,29 +6,47 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 public interface SubsDao extends JpaRepository<Subs, Long> {
 
-    @Query("SELECT s FROM service s where s.state='ACTIVE' and s.type=:type")
-    List<Subs> getActiveServices(@Param("type") String type);
+    @Query("SELECT s FROM subs s where s.state='ACTIVE' and s.type=:type")
+    List<Subs> getActiveSubs(@Param("type") String type);
 
-    public default Subs getService(Long id) {
+    public default Subs getSubs(Long id) {
         Optional<Subs> service = findById(id);
         return service.isPresent()?service.get():null;
     }
 
-    public default List<Subs> getActiveServices(SERVICE_TYPE serviceType) {
+    public default List<Subs> getActiveSubs(SERVICE_TYPE serviceType) {
         SubsDao subsDao;
-        return getActiveServices(serviceType.toString());
+        return getActiveSubs(serviceType.toString());
     }
 
-    public default void deactivationActiveService(SERVICE_TYPE serviceType) {
-        List<Subs> subcriptions = getActiveServices(serviceType);
+    public default void deactivationActiveSubs(SERVICE_TYPE serviceType) {
+        List<Subs> subcriptions = getActiveSubs(serviceType);
         for(Subs subs : subcriptions) {
-            subs.setState(Subs.State.NONACTIVE.toString());
+            subs.setState(Subs.STATE_SUBS.NONACTIVE.toString());
         }
         saveAllAndFlush(subcriptions);
+    }
+
+    public default void addSubs(List<String[]> rows) {
+        List<Subs> listSubs = new ArrayList<>();
+        for(String[] row : rows) {
+            Subs subs = new Subs();
+            subs.setName(row[0]);
+            subs.setDescription(row[1]);
+            subs.setCountDay(Integer.valueOf(row[2]));
+            subs.setCountUse(Integer.valueOf(row[3]));
+            subs.setMaxUse(Integer.valueOf(row[4]));
+            subs.setPrice(Long.valueOf(row[5]));
+            subs.setType(row[6]);
+            subs.setState(Subs.STATE_SUBS.ACTIVE.toString());
+            listSubs.add(subs);
+        }
+        saveAll(listSubs);
     }
 }

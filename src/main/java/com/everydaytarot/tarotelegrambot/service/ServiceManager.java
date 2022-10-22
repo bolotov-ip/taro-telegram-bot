@@ -7,4 +7,6 @@ public interface ServiceManager {
 
     public SERVICE_STATE start(Long chatId, Subs subs);
 
+    public ServiceProvider getService(SERVICE_TYPE serviceType);
+
 }

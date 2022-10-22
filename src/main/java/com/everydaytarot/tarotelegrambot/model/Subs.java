@@ -2,10 +2,10 @@ package com.everydaytarot.tarotelegrambot.model;
 
 import javax.persistence.*;
 
-@Entity(name = "service")
+@Entity(name = "subs")
 public class Subs {
 
-    public enum State {ACTIVE, NONACTIVE}
+    public enum STATE_SUBS {ACTIVE, NONACTIVE}
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -31,17 +31,17 @@ public class Subs {
     Long price;
 
     @Column(name="state")
-    String state = State.ACTIVE.toString();
+    String state = STATE_SUBS.ACTIVE.toString();
 
-    @Column(name="service_type")
-    String serviceType;
+    @Column(name="type")
+    String type;
 
-    public String getServiceType() {
-        return serviceType;
+    public String getType() {
+        return type;
     }
 
-    public void setServiceType(String serviceType) {
-        this.serviceType = serviceType;
+    public void setType(String type) {
+        this.type = type;
     }
 
     public Long getId() {

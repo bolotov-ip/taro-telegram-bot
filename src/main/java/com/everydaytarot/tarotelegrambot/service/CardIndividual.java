@@ -12,9 +12,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.sql.Date;
+import java.util.List;
 
 @Component
-public class CardIndividual {
+public class CardIndividual implements ServiceProvider {
 
 
     @Autowired
@@ -51,6 +52,11 @@ public class CardIndividual {
         query.setOrderId(order.getId());
         query.setCategoryPrediction(stateDao.getSelectAugury(order.getChatId()));
         return queryDao.save(query);
+    }
+
+    @Override
+    public List<String> getCategory() {
+        return null;
     }
 
 
